@@ -1,0 +1,23 @@
+{
+  "spellright.documentTypes": [
+    "markdown",
+    "mdx"
+  ],
+  "spellright.language": [
+    "en"
+  ],
+  "spellright.parserByClass": {
+    "mdx": {
+      "parser": "markdown"
+    }
+  },
+  "eslint.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "markdown"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
+}

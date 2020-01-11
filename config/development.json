@@ -1,0 +1,9 @@
+{
+    "youtubeMp3Downloader": {
+        "ffmpegPath": "ffmpeg", 
+        "outputPath": "/home/heyvn/Music/youtube-mp3-downloader", 
+        "youtubeVideoQuality": "highest", 
+        "queueParallelism": 10, 
+        "progressTimeout": 2000
+    }
+}

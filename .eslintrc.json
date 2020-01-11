@@ -1,0 +1,32 @@
+{
+  "parser": "babel-eslint",
+  "extends": [
+    "standard",
+    "plugin:ramda/recommended",
+    "plugin:flowtype/recommended",
+    "prettier/standard",
+    "plugin:prettier/recommended"
+  ],
+  "plugins": [
+    "flowtype",
+    "ramda"
+  ],
+  "parserOptions": {
+    "sourceType": "script"
+  },
+  "env": {
+    "node": true,
+    "jest": true
+  },
+  "rules": {
+    "semi": [
+      2,
+      "always"
+    ],
+    "no-extra-semi": 2,
+    "strict": [
+      "error",
+      "global"
+    ]
+  }
+}
