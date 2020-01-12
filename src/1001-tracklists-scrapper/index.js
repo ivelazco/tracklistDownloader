@@ -1,12 +1,12 @@
 'use strict';
 
 const cheerio = require('cheerio');
-const { compose, tap, reject, either, isNil, isEmpty, includes } = require('ramda');
+const { compose, reject, either, isNil, isEmpty, includes } = require('ramda');
 const request = require('request-promise');
 const isNilOrEmpty = either(isNil, isEmpty);
 
 // @todo (iv): change to regex
-const rejectIDtracks = compose(reject(either(isNilOrEmpty, includes('ID - ID'))), tap(console.log));
+const rejectIDtracks = compose(reject(either(isNilOrEmpty, includes('ID - ID'))));
 
 async function tracklists1001Scrapper(url) {
   // make a tap after
