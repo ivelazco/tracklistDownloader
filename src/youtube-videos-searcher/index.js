@@ -3,8 +3,14 @@
 const YouTube = require('simple-youtube-api');
 const { prAll } = require('../utils');
 const { map, head, compose, prop, pipe } = require('ramda');
-const youtube = new YouTube('AIzaSyB1Xr5NydyJLRj2WXQLd4mKMNp7YohBbGc');
+const {
+  youtubeVideoSearcher: { apiKey }
+} = require('../../config/development.json');
+
+const youtube = new YouTube(apiKey);
+
 const getIdFromHead = compose(prop('id'), head);
+
 /**
  *
  *
