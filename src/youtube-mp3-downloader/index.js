@@ -1,47 +1,16 @@
 'use strict';
-var YoutubeMp3Downloader = require('youtube-mp3-downloader');
-const { youtubeMp3Downloader: config } = require('../../config/development.json');
+const Downloader = require('./Downloader');
+const { youtubeMp3Downloader: config } = require('../../config/local.json');
 const { map, pipe } = require('ramda');
 const { prAll } = require('../utils');
-
-const roundedNumber = number => Math.round(number * 100) / 100;
 
 const logError = (error, videoId) => {
   console.log(`[error][${videoId}] ${error}`);
   return { status: false };
 };
 
-var Downloader = function() {
-  var self = this;
-
-  // Configure YoutubeMp3Downloader with your settings
-  self.YD = new YoutubeMp3Downloader(config);
-
-  self.callbacks = {};
-
-  self.YD.on('finished', function(error, data) {
-    if (self.callbacks[data.videoId]) {
-      self.callbacks[data.videoId](error, data);
-    } else {
-      console.log('Error: No callback for videoId!');
-    }
-  });
-
-  self.YD.on('progress', function({ progress: { percentage }, videoId }) {
-    console.log(`[progress][${videoId}] ${roundedNumber(percentage)}%`);
-  });
-
-  self.YD.on('error', function(error, data) {
-    if (self.callbacks[data.videoId]) {
-      self.callbacks[data.videoId](error, data);
-    } else {
-      console.log('Error: No callback for videoId!');
-    }
-  });
-};
-
 Downloader.prototype.getMP3 = function(track, callback) {
-  var self = this;
+  const self = this;
 
   // Register callback
   self.callbacks[track.videoId] = callback;
@@ -49,8 +18,8 @@ Downloader.prototype.getMP3 = function(track, callback) {
   self.YD.download(track.videoId, track.name);
 };
 
-module.exports = async videos => {
-  const dl = new Downloader();
+module.exports = (videos, path) => {
+  const dl = new Downloader({ ...config, outputPath: path || config.path });
   return pipe(
     map(
       videoId =>

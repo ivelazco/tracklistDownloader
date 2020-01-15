@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 'use strict';
 const {
-  argv: { url }
+  argv: { url, path }
 } = require('yargs');
 const handler = require('./src/handler');
 
-handler(url);
+handler(url, path);

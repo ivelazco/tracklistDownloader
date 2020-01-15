@@ -5,7 +5,7 @@ const { prAll } = require('../utils');
 const { map, head, compose, prop, pipe } = require('ramda');
 const {
   youtubeVideoSearcher: { apiKey }
-} = require('../../config/development.json');
+} = require('../../config/local.json');
 
 const youtube = new YouTube(apiKey);
 
