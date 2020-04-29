@@ -2,14 +2,14 @@
 
 const YouTube = require('simple-youtube-api');
 const { prAll } = require('../utils');
-const { map, head, compose, prop, pipe } = require('ramda');
+const { map, head, compose, prop, pipe, tap } = require('ramda');
 const {
   youtubeVideoSearcher: { apiKey }
 } = require('../../config/local.json');
 
 const youtube = new YouTube(apiKey);
 
-const getIdFromHead = compose(prop('id'), head);
+const getIdFromHead = compose(tap(a => console.log('[youtube-video-searcher] finished')), prop('id'), head);
 
 /**
  *

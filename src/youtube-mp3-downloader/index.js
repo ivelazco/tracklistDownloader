@@ -19,7 +19,7 @@ Downloader.prototype.getMP3 = function(track, callback) {
 };
 
 module.exports = (videos, path) => {
-  const dl = new Downloader({ ...config, outputPath: path || config.path });
+  const dl = new Downloader({ ...config, outputPath: path || config.outputPath });
   return pipe(
     map(
       videoId =>
