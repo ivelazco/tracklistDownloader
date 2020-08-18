@@ -1,0 +1,19 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Program",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}\\lambda.js",
+      "args": [
+        "--url",
+        "https://www.1001tracklists.com/tracklist/2pxkj38t/paul-van-dyk-sunday-sessions-23-sunset-boat-party-set-potsdam-germany-2020-08-16.html"
+      ]
+    }
+  ]
+}

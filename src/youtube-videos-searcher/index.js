@@ -9,7 +9,11 @@ const {
 
 const youtube = new YouTube(apiKey);
 
-const getIdFromHead = compose(tap(a => console.log('[youtube-video-searcher] finished')), prop('id'), head);
+const getIdFromHead = compose(
+  tap(a => console.log('[youtube-video-searcher] finished')),
+  prop('id'),
+  head
+);
 
 /**
  *
@@ -22,7 +26,12 @@ async function youtubeVideoSearcher(track) {
       .searchVideos(track, 2)
       .then(results => getIdFromHead(results))
       // @todo: pass this err function to a utils ( pass context as param)
-      .catch(err => console.log('[Error][youtube-video-searcher] ', JSON.stringify(err)))
+      .catch(err =>
+        console.log(
+          '[Error][youtube-video-searcher] ',
+          err.code === 403 ? err.message : JSON.stringify(err)
+        )
+      )
   );
 }
 

@@ -26,7 +26,7 @@ const Downloader = function(config) {
     if (data && data.videoId && self.callbacks[data.videoId]) {
       self.callbacks[data.videoId](error, data);
     } else {
-      console.log('Error: No callback for videoId!');
+      console.log(error);
     }
   });
 };

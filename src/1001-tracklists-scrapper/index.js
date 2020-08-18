@@ -1,9 +1,9 @@
 'use strict';
 
 const cheerio = require('cheerio');
-const { compose, reject, either, isNil, isEmpty, includes } = require('ramda');
+const { compose, reject, either, includes } = require('ramda');
 const request = require('request-promise');
-const isNilOrEmpty = either(isNil, isEmpty);
+const { isNilOrEmpty } = require('@flybondi/ramda-land');
 
 // @todo (iv): change to regex
 const rejectIDtracks = compose(reject(either(isNilOrEmpty, includes('ID - ID'))));
