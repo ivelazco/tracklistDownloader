@@ -159,3 +159,6 @@ flow-typed/
 
 # build files
 build/
+
+# ffmpeg files
+ffmpeg/
