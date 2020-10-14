@@ -1,6 +1,7 @@
 'use strict';
 const Downloader = require('./Downloader');
 const { youtubeMp3Downloader: config } = require('../../config/local.json');
+const printResults = require('../print-results');
 const { map, pipe, compose, when } = require('ramda');
 const { isNilOrEmpty, rejectNilOrEmpty } = require('@flybondi/ramda-land');
 const { prAll } = require('../utils');
@@ -21,7 +22,7 @@ Downloader.prototype.getMP3 = function(track, callback) {
   const self = this;
 
   // Register callback
-  self.callbacks[track.videoId] = callback;
+  self.callbacks[track.videoId] = {callback, name: track.name};
   // Trigger download
   self.YD.download(track.videoId, track.name);
 };
@@ -49,6 +50,6 @@ module.exports = (videos, folderPath) => {
           })
         )
     ),
-    prAll
+    prAll(printResults)
   )(transformedVideos);
 };

@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "download": "./lambda.js"
+    "download": "node ./lambda.js"
   },
   "dependencies": {
     "@flybondi/ramda-land": "^4.0.0",

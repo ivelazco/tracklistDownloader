@@ -4,6 +4,7 @@ const cheerio = require('cheerio');
 const { compose, reject, either, includes } = require('ramda');
 const request = require('request-promise');
 const { isNilOrEmpty } = require('@flybondi/ramda-land');
+const { tapAfter } = require('../utils');
 
 // @todo (iv): change to regex
 const rejectIDtracks = compose(reject(either(isNilOrEmpty, includes('ID - ID'))));
@@ -40,4 +41,7 @@ async function tracklists1001Scrapper(url) {
   );
 }
 
-module.exports = tracklists1001Scrapper;
+module.exports = tapAfter(trackNames => {
+  console.log(`[1001tracklists] Results: ${trackNames.length} tracks scrapped. `);
+  return trackNames;
+}, tracklists1001Scrapper);

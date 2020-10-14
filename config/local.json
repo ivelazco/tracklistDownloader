@@ -1,12 +1,12 @@
 {
-    "youtubeMp3Downloader": {
-        "ffmpegPath": "ffmpeg", 
-        "outputPath": "/Users/heyvn/Music/youtube-downloader", 
-        "youtubeVideoQuality": "highest", 
-        "queueParallelism": 10, 
-        "progressTimeout": 2000
-    },
-    "youtubeVideoSearcher": {
-        "apiKey": "AIzaSyB1Xr5NydyJLRj2WXQLd4mKMNp7YohBbGc"
-    }
+  "youtubeMp3Downloader": {
+    "ffmpegPath": "<FMPEG_PATH>",
+    "outputPath": "<OUTPUT_PATH>",
+    "youtubeVideoQuality": "highest",
+    "queueParallelism": 10,
+    "progressTimeout": 2000
+  },
+  "youtubeVideoSearcher": {
+    "apiKey": "<Google API Key>"
+  }
 }
