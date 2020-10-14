@@ -140,7 +140,6 @@ ehthumbs_vista.db
 # Dump file
 *.stackdump
 
-config/local.json
 # Folder config file
 [Dd]esktop.ini
 
@@ -162,3 +161,6 @@ build/
 
 # ffmpeg files
 ffmpeg/
+
+#config file
+config/local.json
