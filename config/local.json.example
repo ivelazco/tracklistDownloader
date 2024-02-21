@@ -7,6 +7,6 @@
     "progressTimeout": 2000
   },
   "youtubeVideoSearcher": {
-    "apiKey": "AIzaSyCr0KnZIGwDrJmHaHVHxzMV7MxiPDGg53A"
+    "apiKey": ""
   }
 }
