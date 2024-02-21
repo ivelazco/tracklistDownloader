@@ -34,8 +34,18 @@ const getIdFromHead = compose(prop('id'), head);
 async function youtubeVideoSearcher(track) {
   return (
     youtube
-      .searchVideos(track, 2)
-      .then(results => getIdFromHead(results))
+      .searchVideos(track, 10)
+      .then(results => {
+        console.log(
+          JSON.stringify({
+            [track]: {
+              results,
+              raws: results.map(r => r.raw && r.raw.snippet && r.raw.snippet.title)
+            }
+          })
+        );
+        return getIdFromHead(results);
+      })
       // @todo: pass this err function to a utils ( pass context as param)
       .catch(err =>
         console.log(
@@ -59,7 +69,7 @@ const responseFormatter = compose(
  */
 const prAllYoutubeVideoSearches = pipe(map(youtubeVideoSearcher), prAll(responseFormatter));
 
-module.exports =  tapAfter(trackNames => {
+module.exports = tapAfter(trackNames => {
   console.log(`[youtube-video-searcher] Results: ${trackNames.length} url tracks founded.`);
   return trackNames;
 }, prAllYoutubeVideoSearches);

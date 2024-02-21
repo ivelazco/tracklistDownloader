@@ -11,9 +11,10 @@ async function handler(url = testUrl, path = null) {
   try {
     // URL or TEST
     const tracklist = await getTracklist(url, path);
+    console.log(`tracklist to download: ${tracklist}`);
     const youtubeUrls = await searchYtVideos(tracklist);
     const folderPath = await createFolder(url);
-    return ytDownloader(youtubeUrls, path || folderPath);
+    // return ytDownloader(youtubeUrls, path || folderPath);
   } catch (error) {
     return console.log('[error][catch]', error);
   }

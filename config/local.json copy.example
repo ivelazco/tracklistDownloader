@@ -1,12 +1,12 @@
 {
   "youtubeMp3Downloader": {
-    "ffmpegPath": "</usr/local/bin/ffmpeg",
-    "outputPath": "/Users/heyvn/Downloads/musick",
+    "ffmpegPath": "<FMPEG_PATH>",
+    "outputPath": "<OUTPUT_PATH>",
     "youtubeVideoQuality": "highest",
     "queueParallelism": 10,
     "progressTimeout": 2000
   },
   "youtubeVideoSearcher": {
-    "apiKey": "AIzaSyCr0KnZIGwDrJmHaHVHxzMV7MxiPDGg53A"
+    "apiKey": "<Google API Key>"
   }
 }

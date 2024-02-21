@@ -22,9 +22,10 @@ async function tracklists1001Scrapper(url) {
     request(options)
       .then($ => {
         const songs = [];
-        $('main')
-          .find('table')
-          .find('tr.tlpItem')
+        $('#root')
+          .find('#middle')
+          .find('#tlTab')
+          .find('div.tlpTog')
           .map(
             (i, element) =>
               element &&
