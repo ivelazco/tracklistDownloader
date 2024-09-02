@@ -41,10 +41,11 @@ module.exports = (videos, folderPath) => {
             try {
               videoTitle && console.log('[finished] ', JSON.stringify(videoTitle));
               const result = err
-                ? logError(err, videoId)
+                ? reject(logError(err, videoId))
                 : { status: true, videoTitle: videoTitle };
               resolve(result);
             } catch (e) {
+              
               reject(e.message);
             }
           })

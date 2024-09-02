@@ -22,15 +22,18 @@ async function tracklists1001Scrapper(url) {
     request(options)
       .then($ => {
         const songs = [];
-        $('main')
-          .find('table')
-          .find('tr.tlpItem')
+      
+        $('body')
+          .find('div#root')
+          .find('div#middle')
+          .find('div#tlTab')
+          .find('div.tlpItem')
           .map(
             (i, element) =>
               element &&
               songs.push(
                 $(element)
-                  .find('span.trackValue')
+.find('span.trackValue')
                   .text()
                   .trim()
               )

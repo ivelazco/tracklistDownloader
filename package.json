@@ -16,7 +16,7 @@
     "yargs": "^15.1.0",
     "youtube-mp3-downloader": "^0.6.3",
     "youtube-mp3-downloader-fixed": "^0.6.4",
-    "ytdl-core": "2.1.7"
+    "ytdl-core": "^2.1.7"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^8.2.0",
