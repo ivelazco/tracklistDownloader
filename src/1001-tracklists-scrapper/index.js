@@ -22,7 +22,7 @@ async function tracklists1001Scrapper(url) {
     request(options)
       .then($ => {
         const songs = [];
-      
+
         $('body')
           .find('div#root')
           .find('div#middle')
@@ -33,7 +33,7 @@ async function tracklists1001Scrapper(url) {
               element &&
               songs.push(
                 $(element)
-.find('span.trackValue')
+                  .find('span.trackValue')
                   .text()
                   .trim()
               )

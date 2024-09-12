@@ -1,6 +1,7 @@
 'use strict';
 
 const YouTube = require('simple-youtube-api');
+const yts = require( 'yt-search' )
 const { prAll, tapAfter } = require('../utils');
 const {
   map,
@@ -24,7 +25,7 @@ const {
 const youtube = new YouTube(apiKey);
 const propNotEq = complement(propEq);
 
-const getIdFromHead = compose(prop('id'), head);
+const getURLFromHead = compose(prop('url'), head);
 
 /**
  *
@@ -32,18 +33,16 @@ const getIdFromHead = compose(prop('id'), head);
  * @param {String} track
  */
 async function youtubeVideoSearcher(track) {
-  return (
-    youtube
-      .searchVideos(track, 2)
-      .then(results => getIdFromHead(results))
-      // @todo: pass this err function to a utils ( pass context as param)
-      .catch(err =>
+  try {
+  const r = await yts(track);
+  return getURLFromHead(r.videos);
+  } catch(err) {
         console.log(
           '[Error][youtube-video-searcher] ',
           err.code === 403 ? err.message : JSON.stringify(err)
         )
-      )
-  );
+        return err;
+  }
 }
 
 const responseFormatter = compose(
@@ -59,7 +58,7 @@ const responseFormatter = compose(
  */
 const prAllYoutubeVideoSearches = pipe(map(youtubeVideoSearcher), prAll(responseFormatter));
 
-module.exports =  tapAfter(trackNames => {
+module.exports = tapAfter(trackNames => {
   console.log(`[youtube-video-searcher] Results: ${trackNames.length} url tracks founded.`);
   return trackNames;
 }, prAllYoutubeVideoSearches);
