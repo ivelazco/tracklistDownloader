@@ -48,19 +48,19 @@ Example:
 }
 ```
 
-🖥️ CLI Usage
+## 🖥️ CLI Usage
 
 ```unix
 yarn download --url 'https://www.1001tracklists.com/tracklist/f82b001/john-00-fleming-the-digital-blonde-joof-radio-002-2020-01-14.html'
 ```
 
-🤝 Contributing
+## 🤝 Contributing
 
 Pull requests are welcome!
 For major changes, please open an issue first to discuss what you’d like to propose.
 Make sure to update or add relevant tests when necessary.
 
-📌 Notes
+## 📌 Notes
 
 - For now, the only site available is [1001tracklists](www.1001tracklists.com)
 - `ID-ID` tracks will not be searched.
