@@ -6,13 +6,21 @@ const printVideoTitle = (folderPath) =>
     join('\n'),
     map(({ value }) => `-- "${value.replace(folderPath, '')}"`),
   );
+
+const printFailVideoTitle = (folderPath) =>
+  compose(
+    join('\n'),
+    map(({ reason }) => `-- "${reason.replace(folderPath, '')}"`),
+  );
+
+
 const printFinalResults =
   (folderPath) =>
   ({ successfuls, fails }) =>
     console.log(
       `[execution][finished] \n 
-      Successfuls: ${successfuls ? length(successfuls) : 0} ${successfuls ? printVideoTitle(folderPath)(successfuls) : 0}\n 
-      Fails: ${fails ? length(fails) : 0} ${fails ? printVideoTitle(fails) : ''}\n `,
+      Successfuls: ${successfuls ? length(successfuls) : 0}}\n 
+      Fails: ${fails ? length(fails) : 0}S\n `,
     );
 const groupByStatus = groupBy(({ status }) => (status === 'fulfilled' ? 'successfuls' : 'fails'));
 

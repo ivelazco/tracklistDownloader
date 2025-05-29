@@ -21,7 +21,6 @@ async function handler(url = testUrl, path = undefined, jsonList = undefined) {
       throw new Error('no tracklist list found.');
     }
 
-    console.log({ tracklist });
 
     const youtubeUrls = await searchYtVideos(tracklist);
     if (isNilOrEmpty(youtubeUrls)) {
@@ -29,7 +28,8 @@ async function handler(url = testUrl, path = undefined, jsonList = undefined) {
     }
 
     const folderPath = await createFolder(url);
-    console.log({ path, folderPath, youtubeUrls });
+    console.log('Downloading... ');
+
 
     return ytDownloader(youtubeUrls, path || folderPath);
   } catch (error) {
