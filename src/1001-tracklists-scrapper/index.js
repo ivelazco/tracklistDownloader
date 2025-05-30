@@ -1,33 +1,29 @@
 'use strict';
 
 const cheerio = require('cheerio');
-const { chromium } = require('playwright');  
+const { chromium } = require('playwright');
 const { compose, reject, either, includes } = require('ramda');
 const { isNilOrEmpty } = require('@flybondi/ramda-land');
 const { tapAfter } = require('../utils');
 const fs = require('fs/promises');
 
-
-
 // @todo (iv): change to regex
 const rejectIDtracks = compose(reject(either(isNilOrEmpty, includes('ID - ID'))));
 
-async function fetchWithConsent(
-  url,
-  { acceptCookies = true, timeout = 30000 } = {}
-) {
+async function fetchWithConsent(url, { acceptCookies = true, timeout = 30000 } = {}) {
   // 1. Launch browser with enhanced configuration
-  const browser = await chromium.launch({ 
+  const browser = await chromium.launch({
     headless: true,
     args: [
       '--disable-web-security',
       '--disable-features=IsolateOrigins,site-per-process',
-      '--no-sandbox'
-    ]
+      '--no-sandbox',
+    ],
   });
-  
+
   const context = await browser.newContext({
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+    userAgent:
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
     viewport: { width: 1920, height: 1080 },
     javaScriptEnabled: true,
   });
@@ -36,9 +32,9 @@ async function fetchWithConsent(
 
   // 2. Navigate and wait for full page load
   try {
-    await page.goto(url, { 
+    await page.goto(url, {
       waitUntil: 'networkidle',
-      timeout 
+      timeout,
     });
 
     // Wait for any dynamic content to load
@@ -52,16 +48,14 @@ async function fetchWithConsent(
       'message-component message-column',
       'button[title="Accept"]',
     ];
-    
+
     for (const sel of candidateSelectors) {
       const el = await page.$(sel);
       if (el) {
         if (acceptCookies) {
           await el.click({ delay: 50 });
         } else {
-          const rejectSel = candidateSelectors.find(s =>
-            s.includes('Rechazar')
-          );
+          const rejectSel = candidateSelectors.find((s) => s.includes('Rechazar'));
           const rejectBtn = await page.$(rejectSel);
           if (rejectBtn) await rejectBtn.click({ delay: 50 });
         }
@@ -89,39 +83,35 @@ async function tracklists1001Scrapper(url) {
 
   const $ = await fetchWithConsent(url);
 
-  await fs.writeFile('dump.html', $.html());  // ‹dump.html› se abre luego en el navegador
-  console.log('📝 HTML guardado en dump.html');
-    // 2. Scraping tal cual lo tenías (ajusto un par de detalles CSS)
-  const tracks =  $('body')
-          .find('div.tlpItem')
+  // 2. Scraping tal cual lo tenías (ajusto un par de detalles CSS)
+  const tracks = $('body')
+    .find('div.tlpItem')
     .map((_i, element) => {
       const $el = $(element);
 
       // Primer span.trackValue  ➜ nombre del tema
-      const songName = $el
+      const artist = $el
         .find('span.trackValue')
-        .first()          // equivale a :nth-child(1)
+        .first() // equivale a :nth-child(1)
         .text()
         .trim();
 
       // Tercer span.trackValue ➜ artista
-      const artist = $el
+      const trackName = $el
         .find('span.trackValue')
-        .eq(2)            // índice 0-based (0: primero, 1: segundo, 2: tercero)
+        .eq(2) // índice 0-based (0: primero, 1: segundo, 2: tercero)
         .find('span')
         .text()
         .trim();
 
-      return `${songName} - ${artist}`;
+      return `${artist} ${trackName}`;
     })
-    .get();               // convierte la colección Cheerio en un Array JS
-
-  console.log(tracks);
+    .get(); // convierte la colección Cheerio en un Array JS
 
   return rejectIDtracks(tracks);
 }
 
-module.exports = tapAfter(trackNames => {
-  console.log(`[1001tracklists] Results: ${trackNames.length} tracks scrapped. `);
+module.exports = tapAfter((trackNames) => {
+  console.log(`[1001tracklists] Results: ${trackNames.length} tracks scrapped: ${trackNames}`);
   return trackNames;
 }, tracklists1001Scrapper);

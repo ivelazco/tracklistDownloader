@@ -20,9 +20,6 @@ const throwIfVideosIsNilOrEmpty = compose(
 
 module.exports = (videos, folderPath) => {
   const transformedVideos = throwIfVideosIsNilOrEmpty(videos);
-  console.log({
-    outputDir: folderPath,
-  });
   const dl = new Downloader({
     ...config,
     outputPath: folderPath,
