@@ -14,6 +14,7 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
     "simple-youtube-api": "^5.2.1",
+    "spotify-web-api-node": "^5.0.2",
     "yargs": "^15.1.0",
     "youtube-mp3-downloader": "^0.6.3",
     "youtube-mp3-downloader-fixed": "^0.6.4",

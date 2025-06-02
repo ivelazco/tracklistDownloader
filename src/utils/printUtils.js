@@ -13,8 +13,7 @@ const printFailVideoTitle = (folderPath) =>
     map(({ reason }) => `-- "${reason.replace(folderPath, '')}"`),
   );
 
-
-const printFinalResults =
+const printEndOfExecution =
   (folderPath) =>
   ({ successfuls, fails }) =>
     console.log(
@@ -22,6 +21,13 @@ const printFinalResults =
       Successfuls: ${successfuls ? length(successfuls) : 0}}\n 
       Fails: ${fails ? length(fails) : 0}S\n `,
     );
+
 const groupByStatus = groupBy(({ status }) => (status === 'fulfilled' ? 'successfuls' : 'fails'));
 
-module.exports = (folderPath) => compose(printFinalResults(folderPath), groupByStatus);
+module.exports = {
+  printVideoTitle,
+  printFailVideoTitle,
+  printEndOfExecution,
+  groupByStatus,
+  printResults: (folderPath) => compose(printEndOfExecution(folderPath), groupByStatus)
+}; 

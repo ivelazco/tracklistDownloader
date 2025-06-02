@@ -164,3 +164,4 @@ ffmpeg/
 
 #config file
 config/local.json
+config/local-*.json

@@ -7,7 +7,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "Test 1001tracklists",
       "skipFiles": [
         "<node_internals>/**"
       ],
@@ -15,6 +15,19 @@
       "args": [
         "--url",
         "https://www.1001tracklists.com/tracklist/2pxkj38t/paul-van-dyk-sunday-sessions-23-sunset-boat-party-set-potsdam-germany-2020-08-16.html"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Test Spotify",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}\\lambda.js",
+      "args": [
+        "--url",
+        "https://open.spotify.com/playlist/57h9Elahq4VkXNn7axHXT0?si=3htiz5azTTOXaKQ_0xwd2A"
       ]
     }
   ]

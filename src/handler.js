@@ -1,8 +1,8 @@
 'use strict';
-const ytDownloader = require('./youtube-mp3-downloader');
-const getTracklist = require('./1001-tracklists-scrapper');
-const searchYtVideos = require('./youtube-videos-searcher');
-const createFolder = require('./create-folder');
+const ytDownloader = require('./youtubeDownloader');
+const getTracklist = require('./sourceScrappers');
+const searchYtVideos = require('./youtubeSearcher');
+const createFolder = require('./folderManager');
 const { isNilOrEmpty } = require('@flybondi/ramda-land');
 const testUrl =
   'https://www.1001tracklists.com/tracklist/2tmuwz79/monika-kruse-factory-93-escape-psycho-circus-united-states-2019-10-26.html';

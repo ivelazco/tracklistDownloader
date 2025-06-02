@@ -1,10 +1,9 @@
 'use strict';
 const { Downloader } = require('ytdl-mp3');
 const { youtubeMp3Downloader: config } = require('../../config/local.json');
-const printResults = require('../print-results');
 const { map, pipe, compose, when } = require('ramda');
 const { isNilOrEmpty, rejectNilOrEmpty } = require('@flybondi/ramda-land');
-const { prAll } = require('../utils');
+const { prAll, printResults } = require('../utils');
 
 const logError = (error, videoId) => {
   console.log(`[error][${videoId}] ${error}`);

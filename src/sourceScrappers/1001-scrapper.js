@@ -5,9 +5,7 @@ const { chromium } = require('playwright');
 const { compose, reject, either, includes } = require('ramda');
 const { isNilOrEmpty } = require('@flybondi/ramda-land');
 const { tapAfter } = require('../utils');
-const fs = require('fs/promises');
 
-// @todo (iv): change to regex
 const rejectIDtracks = compose(reject(either(isNilOrEmpty, includes('ID - ID'))));
 
 async function fetchWithConsent(url, { acceptCookies = true, timeout = 30000 } = {}) {
@@ -30,7 +28,6 @@ async function fetchWithConsent(url, { acceptCookies = true, timeout = 30000 } =
 
   const page = await context.newPage();
 
-  // 2. Navigate and wait for full page load
   try {
     await page.goto(url, {
       waitUntil: 'networkidle',
@@ -48,7 +45,7 @@ async function fetchWithConsent(url, { acceptCookies = true, timeout = 30000 } =
       'message-component message-column',
       'button[title="Accept"]',
     ];
-
+    
     for (const sel of candidateSelectors) {
       const el = await page.$(sel);
       if (el) {
@@ -78,25 +75,21 @@ async function fetchWithConsent(url, { acceptCookies = true, timeout = 30000 } =
 }
 
 async function tracklists1001Scrapper(url) {
-  // make a tap after
   console.log(`[1001tracklists][Scrapping] URL: ${url}`);
 
   const $ = await fetchWithConsent(url);
 
-  // 2. Scraping tal cual lo tenías (ajusto un par de detalles CSS)
   const tracks = $('body')
     .find('div.tlpItem')
     .map((_i, element) => {
       const $el = $(element);
 
-      // Primer span.trackValue  ➜ nombre del tema
       const artist = $el
         .find('span.trackValue')
         .first() // equivale a :nth-child(1)
         .text()
         .trim();
 
-      // Tercer span.trackValue ➜ artista
       const trackName = $el
         .find('span.trackValue')
         .eq(2) // índice 0-based (0: primero, 1: segundo, 2: tercero)
@@ -114,4 +107,4 @@ async function tracklists1001Scrapper(url) {
 module.exports = tapAfter((trackNames) => {
   console.log(`[1001tracklists] Results: ${trackNames.length} tracks scrapped: ${trackNames}`);
   return trackNames;
-}, tracklists1001Scrapper);
+}, tracklists1001Scrapper); 
