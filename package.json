@@ -3,6 +3,7 @@
     "download": "node ./lambda.js"
   },
   "dependencies": {
+    "@distube/ytdl-core": "^4.16.12",
     "@flybondi/ramda-land": "^4.0.0",
     "babel-eslint": "^10.0.3",
     "cheerio": "^1.0.0-rc.3",
@@ -13,14 +14,16 @@
     "ramda": "^0.26.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
+    "sharp": "^0.34.2",
     "simple-youtube-api": "^5.2.1",
     "spotify-web-api-node": "^5.0.2",
+    "tesseract.js": "^6.0.1",
     "yargs": "^15.1.0",
     "youtube-mp3-downloader": "^0.6.3",
     "youtube-mp3-downloader-fixed": "^0.6.4",
     "yt-search": "^2.12.1",
     "ytdl-core": "^4.11.5",
-    "ytdl-mp3": "^5.0.0"
+    "ytdl-mp3": "^5.2.2"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^8.2.0",
@@ -39,5 +42,9 @@
   "engines": {
     "node": ">=10.15.3",
     "yarn": ">=1.5.0"
+  },
+  "packageManager": "yarn@4.9.2+sha512.1fc009bc09d13cfd0e19efa44cbfc2b9cf6ca61482725eb35bbc5e257e093ebf4130db6dfe15d604ff4b79efd8e1e8e99b25fa7d0a6197c9f9826358d4d65c3c",
+  "resolutions": {
+    "@distube/ytdl-core": "^4.16.12"
   }
 }

@@ -165,3 +165,8 @@ ffmpeg/
 #config file
 config/local.json
 config/local-*.json
+
+debug_captcha*.png
+
+# ytdl-core temporary files
+*-player-script.js

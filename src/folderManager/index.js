@@ -10,9 +10,10 @@ const getRegularFolderName = compose(slice(0, -5), head, match(/(?:[^/]+)$(?<=(?
 async function getFolderName(url) {
   if (url.includes('open.spotify.com/playlist')) {
     const playlistName = await getSpotifyPlaylistName(url);
-    return `Spotify - ${playlistName}`;
+    console.log('playlistName', playlistName);
+    return `Spotify-${playlistName.replace(/ /g, '-')}`;
   }
-  return `1001tracklists - ${getRegularFolderName(url)}`;
+  return `1001tracklists-${getRegularFolderName(url).replace(/ /g, '-')}`;
 }
 
 async function createFolder(url) {
