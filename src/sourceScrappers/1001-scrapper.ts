@@ -1,18 +1,19 @@
-'use strict';
+import * as cheerio from 'cheerio';
+import { chromium, Page, Browser } from 'playwright';
+import { compose, reject, either, includes } from 'ramda';
+import { isNilOrEmpty } from '@flybondi/ramda-land';
+import { tapAfter } from '../utils';
+import { recognize, RecognizeResult } from 'tesseract.js';
+import sharp from 'sharp';
+import * as fs from 'fs/promises';
+import * as path from 'path';
+import * as fsSync from 'fs';
 
-const cheerio = require('cheerio');
-const { chromium } = require('playwright');
-const { compose, reject, either, includes } = require('ramda');
-const { isNilOrEmpty } = require('@flybondi/ramda-land');
-const { tapAfter } = require('../utils');
-const Tesseract = require('tesseract.js');
-const sharp = require('sharp');
-const fs = require('fs').promises;
-const path = require('path');
+const rejectIDtracks = compose(
+  reject(either(isNilOrEmpty, includes('ID - ID'))),
+) as (tracks: string[]) => string[];
 
-const rejectIDtracks = compose(reject(either(isNilOrEmpty, includes('ID - ID'))));
-
-async function solveCaptcha(page, attempt = 1) {
+async function solveCaptcha(page: Page, attempt: number = 1): Promise<string | null> {
   try {
     const captchaImg = await page.$('img');
     if (!captchaImg) {
@@ -24,17 +25,17 @@ async function solveCaptcha(page, attempt = 1) {
     await fs.writeFile('debug_captcha_original.png', imageBuffer);
 
     // Vary parameters slightly based on attempt number
-    const contrastValue = 2.0 + (attempt * 0.2); // Higher base contrast
-    const whiteThreshold = 210 - (attempt * 3); // Less aggressive white threshold reduction
-    const blackThreshold = 45 + (attempt * 3); // Lower base threshold for black
-    const blurValue = 0.5 + (attempt * 0.05); // More subtle blur changes
+    const contrastValue = 2.0 + attempt * 0.2; // Higher base contrast
+    const whiteThreshold = 210 - attempt * 3; // Less aggressive white threshold reduction
+    const blackThreshold = 45 + attempt * 3; // Lower base threshold for black
+    const blurValue = 0.5 + attempt * 0.05; // More subtle blur changes
 
     // Process for both black and white text with improved parameters
     const processedBufferWhite = await sharp(imageBuffer)
-      .trim({ top: 2, left: 2, right: 2, bottom: 2 })
+      .trim({ threshold: 0 } as any)
       .resize(600, 100, {
         fit: 'fill',
-        kernel: sharp.kernel.nearest
+        kernel: sharp.kernel.nearest,
       })
       .linear(contrastValue, -30)
       .grayscale()
@@ -47,15 +48,16 @@ async function solveCaptcha(page, attempt = 1) {
         bottom: 15,
         left: 15,
         right: 15,
-        background: { r: 255, g: 255, b: 255 }
+        background: { r: 255, g: 255, b: 255 },
       })
       .toBuffer();
 
     const processedBufferBlack = await sharp(imageBuffer)
-      .trim({ top: 2, left: 2, right: 2, bottom: 2 })
-      .resize(800, 120, { // Larger size for better character definition
+      .trim({ threshold: 0 } as any)
+      .resize(800, 120, {
+        // Larger size for better character definition
         fit: 'fill',
-        kernel: sharp.kernel.cubic // Changed to cubic for better quality
+        kernel: sharp.kernel.cubic, // Changed to cubic for better quality
       })
       .linear(contrastValue, -20) // Less negative offset
       .grayscale()
@@ -68,7 +70,7 @@ async function solveCaptcha(page, attempt = 1) {
         bottom: 20,
         left: 20,
         right: 20,
-        background: { r: 255, g: 255, b: 255 }
+        background: { r: 255, g: 255, b: 255 },
       })
       .toBuffer();
 
@@ -77,28 +79,28 @@ async function solveCaptcha(page, attempt = 1) {
 
     // Try OCR on both processed images with improved settings
     const [resultWhite, resultBlack] = await Promise.all([
-      Tesseract.recognize(processedBufferWhite, 'eng', {
-        logger: m => console.log('[Tesseract Progress White]:', m),
+      recognize(processedBufferWhite, 'eng', {
+        logger: (m: unknown) => console.log('[Tesseract Progress White]:', m),
         tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
         tessedit_pageseg_mode: '8', // Treat as single word
         tessedit_ocr_engine_mode: '1', // Neural net mode only
         tessjs_create_pdf: '0',
-        tessjs_create_hocr: '0'
-      }),
-      Tesseract.recognize(processedBufferBlack, 'eng', {
-        logger: m => console.log('[Tesseract Progress Black]:', m),
+        tessjs_create_hocr: '0',
+      } as any),
+      recognize(processedBufferBlack, 'eng', {
+        logger: (m: unknown) => console.log('[Tesseract Progress Black]:', m),
         tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
         tessedit_pageseg_mode: '8',
         tessedit_ocr_engine_mode: '1',
         tessjs_create_pdf: '0',
-        tessjs_create_hocr: '0'
-      })
+        tessjs_create_hocr: '0',
+      } as any),
     ]);
 
     // Clean and combine results
     const textWhite = resultWhite.data.text.trim().replace(/[^a-zA-Z0-9]/g, '');
     const textBlack = resultBlack.data.text.trim().replace(/[^a-zA-Z0-9]/g, '');
-    
+
     console.log('[1001tracklists] OCR Result White:', textWhite);
     console.log('[1001tracklists] OCR Result Black:', textBlack);
 
@@ -107,7 +109,7 @@ async function solveCaptcha(page, attempt = 1) {
     for (let i = 0; i < 6; i++) {
       const whiteChar = textWhite[i];
       const blackChar = textBlack[i];
-      
+
       // If both detected a character, prefer the one that's alphanumeric
       if (blackChar && /[a-zA-Z0-9]/.test(blackChar)) {
         finalText += blackChar;
@@ -117,7 +119,7 @@ async function solveCaptcha(page, attempt = 1) {
         // If we can't get a valid character for this position, try to get it from the other result
         const remainingWhite = textWhite.slice(i);
         const remainingBlack = textBlack.slice(i);
-        
+
         if (remainingBlack && remainingBlack[0] && /[a-zA-Z0-9]/.test(remainingBlack[0])) {
           finalText += remainingBlack[0];
         } else if (remainingWhite && remainingWhite[0] && /[a-zA-Z0-9]/.test(remainingWhite[0])) {
@@ -128,9 +130,9 @@ async function solveCaptcha(page, attempt = 1) {
         }
       }
     }
-    
+
     console.log('[1001tracklists] Combined Result:', finalText);
-    
+
     // Validate exactly 6 alphanumeric characters
     if (!finalText || finalText.length !== 6 || !/^[a-zA-Z0-9]{6}$/.test(finalText)) {
       console.log('[1001tracklists] Invalid result - not exactly 6 alphanumeric characters');
@@ -144,7 +146,15 @@ async function solveCaptcha(page, attempt = 1) {
   }
 }
 
-async function fetchWithConsent(url, { acceptCookies = true, timeout = 30000 } = {}) {
+interface FetchOptions {
+  acceptCookies?: boolean;
+  timeout?: number;
+}
+
+async function fetchWithConsent(
+  url: string,
+  { acceptCookies = true, timeout = 30000 }: FetchOptions = {},
+): Promise<cheerio.CheerioAPI> {
   // 1. Launch browser with enhanced configuration
   const browser = await chromium.launch({
     headless: true,
@@ -169,12 +179,13 @@ async function fetchWithConsent(url, { acceptCookies = true, timeout = 30000 } =
       '--enable-features=NetworkService,NetworkServiceInProcess',
       '--force-color-profile=srgb',
       '--metrics-recording-only',
-      '--mute-audio'
+      '--mute-audio',
     ],
   });
 
   const context = await browser.newContext({
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+    userAgent:
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
     viewport: { width: 1920, height: 1080 },
     javaScriptEnabled: true,
     hasTouch: false,
@@ -184,21 +195,20 @@ async function fetchWithConsent(url, { acceptCookies = true, timeout = 30000 } =
     geolocation: { latitude: 51.5074, longitude: -0.1278 },
     deviceScaleFactor: 1,
     isMobile: false,
-    hasTouch: false,
-    colorScheme: 'light'
+    colorScheme: 'light',
   });
 
   // Add custom headers
   await context.setExtraHTTPHeaders({
     'Accept-Language': 'en-US,en;q=0.9',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
     'Accept-Encoding': 'gzip, deflate, br',
-    'Connection': 'keep-alive',
+    Connection: 'keep-alive',
     'Upgrade-Insecure-Requests': '1',
     'Sec-Fetch-Dest': 'document',
     'Sec-Fetch-Mode': 'navigate',
     'Sec-Fetch-Site': 'none',
-    'Sec-Fetch-User': '?1'
+    'Sec-Fetch-User': '?1',
   });
 
   const page = await context.newPage();
@@ -224,14 +234,14 @@ async function fetchWithConsent(url, { acceptCookies = true, timeout = 30000 } =
     const hasCaptcha = await page.$('input[name="captcha"]');
     if (hasCaptcha) {
       console.log('[1001tracklists] Captcha detected, attempting to solve...');
-      
+
       // Try up to 5 times to solve the captcha
       for (let attempt = 1; attempt <= 5; attempt++) {
         console.log(`[1001tracklists] Captcha solve attempt ${attempt}/5`);
-        
+
         // Get the salt value
-        const saltValue = await page.$eval('input[name="cSalt"]', el => el.value);
-        
+        const saltValue = await page.$eval('input[name="cSalt"]', (el: any) => el.value);
+
         // Try to solve the captcha
         const captchaText = await solveCaptcha(page, attempt);
         if (!captchaText) {
@@ -246,14 +256,14 @@ async function fetchWithConsent(url, { acceptCookies = true, timeout = 30000 } =
         }
 
         console.log('[1001tracklists] Attempting captcha solution:', captchaText);
-        
+
         // Fill in the form
         await page.fill('input[name="captcha"]', captchaText);
-        
+
         // Submit the form
         await Promise.all([
           page.waitForNavigation({ waitUntil: 'networkidle', timeout: 10000 }).catch(() => {}),
-          page.click('button[type="submit"]#captchaBtn')
+          page.click('button[type="submit"]#captchaBtn'),
         ]);
 
         await page.waitForTimeout(3000); // Increased wait time after submission
@@ -264,11 +274,11 @@ async function fetchWithConsent(url, { acceptCookies = true, timeout = 30000 } =
           console.log('[1001tracklists] Captcha solved successfully!');
           break;
         }
-        
+
         if (attempt === 5) {
           throw new Error('Captcha solution was incorrect after 5 attempts');
         }
-        
+
         console.log('[1001tracklists] Incorrect solution, trying again...');
         await page.waitForTimeout(2000); // Added delay before next attempt
       }
@@ -289,15 +299,15 @@ async function fetchWithConsent(url, { acceptCookies = true, timeout = 30000 } =
       'message-component message-column',
       'button[title="Accept"]',
     ];
-    
+
     for (const sel of candidateSelectors) {
       const el = await page.$(sel);
       if (el) {
         if (acceptCookies) {
           await el.click({ delay: 50 });
         } else {
-          const rejectSel = candidateSelectors.find((s) => s.includes('Rechazar'));
-          const rejectBtn = await page.$(rejectSel);
+          const rejectSel = candidateSelectors.find(s => s.includes('Rechazar'));
+          const rejectBtn = rejectSel ? await page.$(rejectSel) : null;
           if (rejectBtn) await rejectBtn.click({ delay: 50 });
         }
       }
@@ -314,15 +324,16 @@ async function fetchWithConsent(url, { acceptCookies = true, timeout = 30000 } =
     return cheerio.load(html);
   } catch (error) {
     await browser.close();
-    throw new Error(`Failed to fetch page: ${error.message}`);
+    const err = error as Error;
+    throw new Error(`Failed to fetch page: ${err.message}`);
   }
 }
 
-async function tracklists1001Scrapper(url) {
+async function tracklists1001Scrapper(url: string): Promise<string[]> {
   console.log(`[1001tracklists][Scrapping] URL: ${url}`);
 
   const $ = await fetchWithConsent(url);
-  require('fs').writeFileSync('debug-1001-dump.html', $.html());
+  fsSync.writeFileSync('debug-1001-dump.html', $.html());
   const tracks = $('body')
     .find('div.tlpItem')
     .map((_i, element) => {
@@ -348,7 +359,10 @@ async function tracklists1001Scrapper(url) {
   return rejectIDtracks(tracks);
 }
 
-module.exports = tapAfter((trackNames) => {
+const log1001Results = (trackNames: string[]): string[] => {
   console.log(`[1001tracklists] Results: ${trackNames.length} tracks scrapped: ${trackNames}`);
   return trackNames;
-}, tracklists1001Scrapper); 
+};
+
+export default tapAfter(log1001Results, tracklists1001Scrapper);
+

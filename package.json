@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "download": "node ./lambda.js"
+    "download": "node --preserve-symlinks -r ts-node/register ./lambda.ts",
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@distube/ytdl-core": "^4.16.12",
@@ -18,15 +20,21 @@
     "simple-youtube-api": "^5.2.1",
     "spotify-web-api-node": "^5.0.2",
     "tesseract.js": "^6.0.1",
-    "yargs": "^15.1.0",
+    "yargs": "^18.0.0",
     "youtube-mp3-downloader": "^0.6.3",
     "youtube-mp3-downloader-fixed": "^0.6.4",
     "yt-search": "^2.12.1",
     "ytdl-core": "^4.11.5",
-    "ytdl-mp3": "^5.2.2"
+    "ytdl-mp3": "portal:../ytdl-mp3"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^8.2.0",
+    "@types/cheerio": "^1.0.0",
+    "@types/node": "^25.0.3",
+    "@types/ramda": "^0.31.1",
+    "@types/yargs": "^17.0.35",
+    "@typescript-eslint/eslint-plugin": "^8.52.0",
+    "@typescript-eslint/parser": "^8.52.0",
     "commitlint": "^8.2.0",
     "eslint": "^6.7.2",
     "eslint-config-prettier": "^6.7.0",
@@ -37,7 +45,9 @@
     "eslint-plugin-standard": "^4.0.1",
     "lint-staged": "^9.5.0",
     "playwright": "^1.52.0",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=10.15.3",
