@@ -1,0 +1,17 @@
+---
+description: "Node.js engine policy"
+alwaysApply: true
+---
+
+# Node engines (QUAL-01)
+
+## MUST
+
+- Treat **`package.json`** field **`engines.node`** as the authoritative minimum for this repo.
+- Minimum **`>=18`**: Playwright (devDependency) requires Node **>=18**; TypeScript alone would allow lower — **Playwright wins**.
+- For day-to-day work, **Node 20+ LTS** is recommended (aligns with current Playwright support); this does not replace the **`>=18`** floor in `engines.node`.
+- Contributors: read **README** prerequisites and **`package.json`** — the same minimum must appear in both (see D-05).
+
+## AVOID
+
+- Documenting a different Node minimum in prose than `engines.node` declares.
