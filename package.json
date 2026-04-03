@@ -2,7 +2,8 @@
   "scripts": {
     "download": "node --preserve-symlinks -r ts-node/register ./lambda.ts",
     "build": "tsc",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "verify:phase1-rules": "node scripts/verify-phase1-rules.mjs"
   },
   "dependencies": {
     "@distube/ytdl-core": "^4.16.12",
