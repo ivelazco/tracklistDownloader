@@ -55,13 +55,13 @@
 | GOV-02 | Phase 1 | Pending |
 | GOV-03 | Phase 1 | Pending |
 | GOV-04 | Phase 1 | Pending |
-| DL-01 | Phase 3 | Pending |
+| QUAL-01 | Phase 1 | Pending |
 | DL-02 | Phase 2 | Pending |
 | DL-03 | Phase 2 | Pending |
-| SPOT-01 | Phase 3 | Pending |
-| SPOT-02 | Phase 3 | Pending |
-| QUAL-01 | Phase 1 | Pending |
-| QUAL-02 | Phase 2 | Pending |
+| QUAL-02 | Phase 3 | Pending |
+| SPOT-01 | Phase 4 | Pending |
+| SPOT-02 | Phase 4 | Pending |
+| DL-01 | Phase 5 | Pending |
 
 **Coverage:**
 
