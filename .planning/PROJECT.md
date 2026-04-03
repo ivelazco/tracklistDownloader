@@ -21,10 +21,10 @@ A **local CLI** that turns a **Spotify playlist URL** or **1001tracklists.com** 
 - ✓ **Functional composition** — Ramda + `@flybondi/ramda-land` (`compose`/`pipe`, `prAll`, `tapAfter`, guards).
 - ✓ **Typed static config** — `config/local.json` imported as `Config` (`src/types/config.d.ts`).
 - ✓ **Output layout** — Folder naming and creation under `youtubeMp3Downloader.outputPath` (`src/folderManager/`).
+- ✓ **Engineering rules in `.cursor/rules`** — Validated in Phase 1: FP, memory/concurrency, utils/barrels, hooks (CLI-first), Node `engines` + `verify-phase1-rules` (GOV-01–04, QUAL-01).
 
 ### Active
 
-- [ ] **Engineering rules in `.cursor/rules`** — Document and enforce conventions for **functional programming**, **memory/RAM usage**, **shared utilities**, and **hooks** (inventory real patterns; today the app is **CLI-first** — hook rules apply where hooks exist or when a UI layer is added).
 - [ ] **Restore download reliability** — End-to-end path works on current Node/YouTube/Spotify ecosystem; **minimum v1 acceptance: Spotify playlist URL → completed downloads** (bulk, with clear failure reporting).
 - [ ] **Hardening** — Reduce fragility (deprecated deps, unused API paths, error handling) as needed to meet the v1 bar.
 
@@ -45,13 +45,13 @@ A **local CLI** that turns a **Spotify playlist URL** or **1001tracklists.com** 
 
 - **Tech:** Node.js, Yarn, FFmpeg on disk, `config/local.json` for secrets and paths (no `.env` in repo today).
 - **Ecosystem:** YouTube and Spotify APIs / HTML may rate-limit or change; scrapers may need maintenance.
-- **Compatibility:** `engines.node` in `package.json` is dated; **practical** minimum should follow current TypeScript/Playwright needs.
+- **Compatibility:** `engines.node` is `>=18` (aligned with Playwright); README and rules cross-link.
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Engineering rules live in **`.cursor/rules/`** | User preference; keeps AI and humans aligned on repo conventions | — Pending |
+| Engineering rules live in **`.cursor/rules/`** | User preference; keeps AI and humans aligned on repo conventions | Phase 1: `.mdc` rules + verification script |
 | **V1 acceptance** = Spotify playlist downloads work | User-defined minimum for “fixed” | — Pending |
 | **CLI-first** milestone | Existing architecture; UI/hooks rules follow actual code | — Pending |
 
@@ -75,4 +75,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-03 after initialization*
+*Last updated: 2026-04-03 after Phase 1 completion*

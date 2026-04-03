@@ -6,7 +6,7 @@ Stabilize a brownfield CLI that resolves tracklists (Spotify first), finds YouTu
 
 ## Phases
 
-- [ ] **Phase 1: Engineering rules & environment** — `.cursor/rules` for FP, memory, utils, hooks; document real Node/engine expectations.
+- [x] **Phase 1: Engineering rules & environment** (2026-04-03) — `.cursor/rules` for FP, memory, utils, hooks; document real Node/engine expectations.
 - [ ] **Phase 2: Reliable download & output** — Maintainable YouTube acquisition and stable output folders.
 - [ ] **Phase 3: Dependency & config cleanup** — Remove or wire dead paths; clearer FFmpeg/config failures.
 - [ ] **Phase 4: Spotify API robustness** — Pagination and actionable errors.
@@ -32,9 +32,9 @@ Stabilize a brownfield CLI that resolves tracklists (Spotify first), finds YouTu
 
 Plans:
 
-- [ ] `phases/01-engineering-rules-environment/01-01-PLAN.md` — Draft `.cursor/rules` from current `src/` patterns (Ramda, `prAll`, `tapAfter`, module boundaries); Wave 0 `.mdc` pilot.
-- [ ] `phases/01-engineering-rules-environment/01-02-PLAN.md` — Memory/concurrency guidance (parallel caps, Playwright lifecycle, batching).
-- [ ] `phases/01-engineering-rules-environment/01-03-PLAN.md` — Node/engine expectations (`package.json`, README, `node-engines.mdc`, `scripts/verify-phase1-rules.mjs`).
+- [x] `phases/01-engineering-rules-environment/01-01-PLAN.md` — Draft `.cursor/rules` from current `src/` patterns (Ramda, `prAll`, `tapAfter`, module boundaries); Wave 0 `.mdc` pilot.
+- [x] `phases/01-engineering-rules-environment/01-02-PLAN.md` — Memory/concurrency guidance (parallel caps, Playwright lifecycle, batching).
+- [x] `phases/01-engineering-rules-environment/01-03-PLAN.md` — Node/engine expectations (`package.json`, README, `node-engines.mdc`, `scripts/verify-phase1-rules.mjs`).
 
 **UI hint:** no
 
@@ -145,7 +145,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Engineering rules & environment | 0/3 | Not started | - |
+| 1. Engineering rules & environment | 3/3 | Complete | 2026-04-03 |
 | 2. Reliable download & output | 0/3 | Not started | - |
 | 3. Dependency & config cleanup | 0/2 | Not started | - |
 | 4. Spotify API robustness | 0/2 | Not started | - |
