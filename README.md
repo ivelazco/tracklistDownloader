@@ -15,6 +15,8 @@ This community-driven project allows you to download music from various sources 
 ## 📦 Requirements
 
 - [Node.js](https://nodejs.org/)
+  - **Minimum:** Node.js 18+ (`engines.node` in `package.json`)
+  - **Recommended:** Node.js 20 LTS or newer for Playwright-supported versions
 - [FFmpeg](https://github.com/adaptlearning/adapt_authoring/wiki/Installing-FFmpeg)
 - A valid [YouTube API Key](https://developers.google.com/youtube/v3/getting-started)
 - Spotify API credentials (only if using Spotify playlist feature)
@@ -93,6 +95,7 @@ Downloads are organized in source-specific folders:
 Pull requests are welcome!
 For major changes, please open an issue first to discuss what you'd like to propose.
 Make sure to update or add relevant tests when necessary.
+Use the Node version in `package.json` `engines` — see Requirements above.
 
 ## 📌 Notes
 
