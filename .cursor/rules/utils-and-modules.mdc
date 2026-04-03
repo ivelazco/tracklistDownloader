@@ -1,0 +1,24 @@
+---
+description: "Shared utils and module boundaries"
+globs:
+  - "src/**/*.ts"
+alwaysApply: false
+---
+
+# Utils and modules (GOV-03)
+
+## MUST
+
+- Add cross-cutting helpers under `src/utils/` and re-export from `src/utils/index.ts`.
+- Import feature code via folder barrels (`import x from './featureFolder'`) as in `src/handler.ts`.
+- Keep shared ambient types under `src/types/`.
+- **Naming:** camelCase functions/modules; naming conventions match `CONVENTIONS.md`.
+- **Errors / reporting:** use `console` with bracketed namespaces (e.g. `[handler]`). Do not add a new logger abstraction unless a later phase scopes it. See `CONVENTIONS.md` for logging/error posture.
+
+## AVOID
+
+- Deep relative imports past a feature’s public barrel without a clear reason.
+
+## Pointers
+
+`src/utils/index.ts`, `src/utils/printUtils.ts`, `src/handler.ts`, `.planning/codebase/STRUCTURE.md` (where to add new code).
