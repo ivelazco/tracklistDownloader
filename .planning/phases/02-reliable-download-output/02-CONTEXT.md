@@ -1,6 +1,7 @@
 # Phase 2: Reliable download & output - Context
 
 **Gathered:** 2026-04-04
+**Reaffirmed:** 2026-04-04 (discuss-phase update — choices unchanged)
 **Status:** Ready for planning
 
 <domain>
@@ -91,6 +92,8 @@ Deliver a **maintainable YouTube → disk** acquisition path and **predictable o
 
 User selected **all** discussion areas; decisions adopt the **recommended** options summarized in `02-DISCUSSION-LOG.md` unless planning surfaces a conflict.
 
+**Update session:** **A1:1, A2:1, A3:A, A4:A** — areas 3–4 recorded as **option 1** (recommended): same as D-05–D-07 and D-08–D-09 (`A` interpreted as first/recommended choice).
+
 </specifics>
 
 <deferred>
@@ -106,4 +109,4 @@ User selected **all** discussion areas; decisions adopt the **recommended** opti
 ---
 
 *Phase: 02-reliable-download-output*
-*Context gathered: 2026-04-04*
+*Context gathered: 2026-04-04; reaffirmed 2026-04-04*

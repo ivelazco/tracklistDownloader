@@ -66,3 +66,19 @@
 ## Deferred Ideas
 
 - Phase 3 dependency cleanup; Phase 4 Spotify robustness; SRCH-01; auto-suffix on collision (see CONTEXT `<deferred>`).
+
+---
+
+## Review session (discuss-phase update)
+
+**Date:** 2026-04-04  
+**Prompt:** Batched options A1–A4 (see prior chat). User reply: **A1:1, A2:1, A3:A, A4:A**.
+
+| Area | Choice | Recorded as |
+|------|--------|-------------|
+| YouTube acquisition | 1 | D-01, D-02 unchanged — harden `ytdl-mp3` first; `yt-dlp`/hybrid in Phase 2 if audit fails v1 bar |
+| Parallelism & per-track failures | 1 | D-03, D-04 unchanged — settled batch + explicit concurrency ceiling |
+| Output path & folder naming | A → 1 | D-05–D-07 unchanged — `--path` override, mkdir, sanitization, reuse folder on collision |
+| FFmpeg & config surfacing | A → 1 | D-08–D-09 unchanged — early `ffmpegPath` validation, README primary |
+
+**Notes:** `A` for areas 3–4 interpreted as **recommended / option 1** (same rows as first session). No decision deltas; CONTEXT reaffirmed.
