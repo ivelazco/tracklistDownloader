@@ -17,7 +17,9 @@ A **local CLI** that turns a **Spotify playlist URL** or **1001tracklists.com** 
 - ✓ **Spotify integration** — `spotify-web-api-node` for playlist metadata and tracks (`spotify-scrapper.ts`).
 - ✓ **1001tracklists path** — Playwright + Cheerio (+ captcha/OCR stack) in `1001-scrapper.ts`.
 - ✓ **YouTube resolution** — `yt-search`–based search per track (`src/youtubeSearcher/`).
-- ✓ **Download execution** — `ytdl-mp3` `Downloader`, parallel per URL with `Promise.allSettled` reporting (`src/youtubeDownloader/`).
+- ✓ **Download execution** — `ytdl-mp3` `Downloader` with **application-level** `queueParallelism` batches and `Promise.allSettled` per batch (`src/youtubeDownloader/`); **PHASE2** audit/decision comments on disk.
+- ✓ **FFmpeg preflight** — `assertFfmpegAvailable` before downloads (`src/utils/ffmpegPreflight.ts`, `src/handler.ts`); README **DL-02** / **DL-03** documents strategy and output layout.
+- ✓ **Output paths** — Windows-safe `Spotify-` / `1001tracklists-` folder names; optional `--path` override with recursive mkdir (`src/folderManager/`, `src/handler.ts`).
 - ✓ **Functional composition** — Ramda + `@flybondi/ramda-land` (`compose`/`pipe`, `prAll`, `tapAfter`, guards).
 - ✓ **Typed static config** — `config/local.json` imported as `Config` (`src/types/config.d.ts`).
 - ✓ **Output layout** — Folder naming and creation under `youtubeMp3Downloader.outputPath` (`src/folderManager/`).
@@ -75,4 +77,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-03 after Phase 1 completion*
+*Last updated: 2026-04-04 after Phase 2 completion*

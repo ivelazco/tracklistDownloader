@@ -7,7 +7,7 @@ Stabilize a brownfield CLI that resolves tracklists (Spotify first), finds YouTu
 ## Phases
 
 - [x] **Phase 1: Engineering rules & environment** (2026-04-03) — `.cursor/rules` for FP, memory, utils, hooks; document real Node/engine expectations.
-- [ ] **Phase 2: Reliable download & output** — Maintainable YouTube acquisition and stable output folders.
+- [x] **Phase 2: Reliable download & output** (2026-04-04) — Maintainable YouTube acquisition and stable output folders.
 - [ ] **Phase 3: Dependency & config cleanup** — Remove or wire dead paths; clearer FFmpeg/config failures.
 - [ ] **Phase 4: Spotify API robustness** — Pagination and actionable errors.
 - [ ] **Phase 5: Spotify playlist E2E acceptance** — Full CLI run proves v1 core value.
@@ -58,9 +58,9 @@ Plans:
 
 Plans:
 
-- [ ] 02-01: Audit `youtubeDownloader` + transitive ytdl behavior; decide and implement primary fetch path.
-- [ ] 02-02: Validate FFmpeg path handling and user-facing error messages.
-- [ ] 02-03: Verify `folderManager` + output root integration after downloader changes.
+- [x] 02-01: Audit `youtubeDownloader` + transitive ytdl behavior; decide and implement primary fetch path.
+- [x] 02-02: Validate FFmpeg path handling and user-facing error messages.
+- [x] 02-03: Verify `folderManager` + output root integration after downloader changes.
 
 **UI hint:** no
 
@@ -146,7 +146,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Engineering rules & environment | 3/3 | Complete | 2026-04-03 |
-| 2. Reliable download & output | 0/3 | Not started | - |
+| 2. Reliable download & output | 3/3 | Complete | 2026-04-04 |
 | 3. Dependency & config cleanup | 0/2 | Not started | - |
 | 4. Spotify API robustness | 0/2 | Not started | - |
 | 5. Spotify playlist E2E acceptance | 0/2 | Not started | - |

@@ -15,8 +15,8 @@
 ### Download pipeline
 
 - [ ] **DL-01**: User can run the CLI with a valid **Spotify playlist URL** and configured `config/local.json` and reach **completed downloads** for resolvable tracks (partial failures reported, run does not abort silently).
-- [ ] **DL-02**: Download path uses a **maintainable** YouTube acquisition strategy (document choice: e.g. current stack hardened, or **yt-dlp**-backed path) and **FFmpeg** configuration is validated with clear errors if missing/invalid.
-- [ ] **DL-03**: Output files land under the configured **output root** with **folder naming** behavior documented and stable for Spotify playlists.
+- [x] **DL-02**: Download path uses a **maintainable** YouTube acquisition strategy (document choice: e.g. current stack hardened, or **yt-dlp**-backed path) and **FFmpeg** configuration is validated with clear errors if missing/invalid.
+- [x] **DL-03**: Output files land under the configured **output root** with **folder naming** behavior documented and stable for Spotify playlists.
 
 ### Spotify integration
 
@@ -56,8 +56,8 @@
 | GOV-03 | Phase 1 | Pending |
 | GOV-04 | Phase 1 | Pending |
 | QUAL-01 | Phase 1 | Pending |
-| DL-02 | Phase 2 | Pending |
-| DL-03 | Phase 2 | Pending |
+| DL-02 | Phase 2 | Complete |
+| DL-03 | Phase 2 | Complete |
 | QUAL-02 | Phase 3 | Pending |
 | SPOT-01 | Phase 4 | Pending |
 | SPOT-02 | Phase 4 | Pending |
