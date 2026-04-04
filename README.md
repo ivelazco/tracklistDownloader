@@ -72,6 +72,16 @@ Example configuration:
 }
 ```
 
+## Download strategy (DL-02)
+
+The CLI downloads audio with **`ytdl-mp3`**, which bundles **`ffmpeg-static`** for transcoding on the default code path. **`youtubeMp3Downloader.ffmpegPath`** in **`config/local.json`** is still validated before downloads start so misconfiguration fails fast; if **`STRATEGY=yt-dlp`** appears in `src/youtubeDownloader/index.ts`, that path would use **`ffmpegPath`** with **`yt-dlp`**.
+
+Relevant **`youtubeMp3Downloader`** keys: **`ffmpegPath`**, **`outputPath`**, **`queueParallelism`**, **`youtubeVideoQuality`**, **`progressTimeout`**. **`queueParallelism`** limits how many tracks download at once in **application code** (not inside **`ytdl-mp3`**).
+
+Install **[FFmpeg](https://github.com/adaptlearning/adapt_authoring/wiki/Installing-FFmpeg)** and set **`ffmpegPath`** to the executable (for example `ffmpeg` on your PATH).
+
+**`YTDL_NO_UPDATE`** is set in **`lambda.ts`** before other imports to reduce unwanted `ytdl-core` update behavior.
+
 ## 🖥️ Usage
 
 ### For 1001tracklists:
@@ -84,11 +94,20 @@ yarn download --url 'https://www.1001tracklists.com/tracklist/f82b001/john-00-fl
 yarn download --url 'https://open.spotify.com/playlist/your_playlist_id'
 ```
 
+## Output layout (DL-03)
+
+Playlist folders are created under **`outputPath`** from **`config/local.json`** (the root for all playlist directories).
+
+- Spotify playlists: `Spotify-{playlist_name}` (hyphens instead of spaces; unsafe characters stripped).
+- 1001tracklists: `1001tracklists-{slug}` derived from the tracklist URL.
+
+Use **`yarn download --url <url> --path ./my-run`** to override the download directory for that run only. Relative **`--path`** values are resolved from the current working directory; the directory is created if missing (**D-05**).
+
+**Collision / reuse:** if the target folder already exists under **`outputPath`**, the run **reuses** the **existing** directory (no numeric suffix).
+
 ## 📂 Output Structure
 
-Downloads are organized in source-specific folders:
-- 1001tracklists downloads: `1001tracklists - [tracklist_name]`
-- Spotify downloads: `Spotify - [playlist_name]`
+Downloads use the folder naming above. See **Output layout (DL-03)** for details.
 
 ## 🤝 Contributing
 

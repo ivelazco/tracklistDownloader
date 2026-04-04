@@ -15,7 +15,7 @@ const argv = yargs(hideBin(process.argv))
   })
   .option('path', {
     type: 'string',
-    describe: 'Output path for downloads',
+    describe: 'Output directory for this run (--path); relative paths resolve from cwd',
   })
   .option('json', {
     type: 'boolean',

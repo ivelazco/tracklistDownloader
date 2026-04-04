@@ -1,5 +1,6 @@
 import { curryN } from '@flybondi/ramda-land';
 import { printVideoTitle, printFailVideoTitle, printEndOfExecution, groupByStatus, printResults } from './printUtils';
+import { assertFfmpegAvailable } from './ffmpegPreflight';
 import { SettledResult } from '../types';
 
 // Generic function type for prAll
@@ -28,5 +29,6 @@ export {
   printEndOfExecution,
   groupByStatus,
   printResults,
+  assertFfmpegAvailable,
 };
 
