@@ -1,6 +1,13 @@
 import { curryN } from '@flybondi/ramda-land';
 import { printVideoTitle, printFailVideoTitle, printEndOfExecution, groupByStatus, printResults } from './printUtils';
 import { assertFfmpegAvailable } from './ffmpegPreflight';
+import { getYtdlMp3OutputPath } from './ytdlMp3OutputPath';
+import {
+  loadYoutubeUrlCache,
+  saveYoutubeUrlCache,
+  isYoutubeWatchUrlValid,
+  youtubeUrlCacheFilePath,
+} from './youtubeUrlCache';
 import { SettledResult } from '../types';
 
 // Generic function type for prAll
@@ -30,5 +37,10 @@ export {
   groupByStatus,
   printResults,
   assertFfmpegAvailable,
+  getYtdlMp3OutputPath,
+  loadYoutubeUrlCache,
+  saveYoutubeUrlCache,
+  isYoutubeWatchUrlValid,
+  youtubeUrlCacheFilePath,
 };
 

@@ -1,44 +1,57 @@
 import yts from 'yt-search';
-import { prAll } from '../utils';
-import { uniq } from 'ramda';
-import { YouTubeSearchResult, YouTubeVideo, FulfilledResult } from '../types';
+import { prAll, loadYoutubeUrlCache, saveYoutubeUrlCache, isYoutubeWatchUrlValid, youtubeUrlCacheFilePath } from '../utils';
+import { YouTubeSearchResult, YouTubeVideo, SettledResult } from '../types';
 
 // PHASE3-SEARCH — YouTube URL lookup uses yt-search only (no YouTube Data API v3 client).
 
-/**
- * Checks if a video title contains blacklisted words
- */
-const hasBlacklistedWords = (title: string): boolean => {
-  const blacklistedWords = ['set', 'session'];
-  const lowercaseTitle = title.toLowerCase();
-  return blacklistedWords.some(word => lowercaseTitle.includes(word));
+/** Inclusive max length for a single track (not DJ sets / long mixes). */
+const MAX_TRACK_SECONDS = 15 * 60;
+
+const LONG_FORM_TITLE_MARKERS = [
+  'long video',
+  'long mix',
+  'hour mix',
+  'hours mix',
+  'full album',
+  'continuous mix',
+  '10 hour',
+  '24 hour',
+  '24/7',
+  'marathon mix',
+  'set',
+  'session',
+] as const;
+
+const titleLooksLikeLongForm = (title: string): boolean => {
+  const t = title.toLowerCase();
+  return LONG_FORM_TITLE_MARKERS.some(marker => t.includes(marker));
 };
 
 /**
- * Converts duration string "HH:MM:SS" to minutes
+ * Parses yt-search duration timestamp to total seconds (HH:MM:SS, MM:SS, or SS).
  */
-const durationToMinutes = (duration: string): number => {
-  const parts = duration.split(':').map(Number);
-  if (parts.length === 3) {
-    return parts[0] * 60 + parts[1] + parts[2] / 60;
-  }
-  return parts[0] + parts[1] / 60;
+const durationToSeconds = (timestamp: string): number => {
+  const parts = timestamp.split(':').map(Number);
+  if (parts.some(n => Number.isNaN(n))) return Number.POSITIVE_INFINITY;
+  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  if (parts.length === 2) return parts[0] * 60 + parts[1];
+  if (parts.length === 1) return parts[0];
+  return Number.POSITIVE_INFINITY;
 };
 
 /**
- * Finds the first valid video that meets our criteria
+ * Finds the first search result that looks like a single track, not a long-form upload.
  */
-const findFirstValidVideo = (videos: YouTubeVideo[]): YouTubeVideo | undefined => {
-  return videos.find(video => {
-    const minutes = durationToMinutes(video.duration.timestamp);
-    return !hasBlacklistedWords(video.title) && minutes < 15;
+const findFirstValidVideo = (videos: YouTubeVideo[]): YouTubeVideo | undefined =>
+  videos.find(video => {
+    const seconds = durationToSeconds(video.duration.timestamp);
+    return !titleLooksLikeLongForm(video.title) && seconds <= MAX_TRACK_SECONDS;
   });
-};
 
 /**
  * Searches for a YouTube video matching the track name with specific criteria
  */
-async function youtubeVideoSearcher(track: string): Promise<string | undefined | unknown> {
+async function youtubeVideoSearcher(track: string): Promise<string | undefined> {
   try {
     const r = (await yts(track)) as YouTubeSearchResult;
     const validVideo = findFirstValidVideo(r.videos);
@@ -49,39 +62,60 @@ async function youtubeVideoSearcher(track: string): Promise<string | undefined |
       '[Error][youtube-video-searcher] ',
       error.code === 403 ? error.message : JSON.stringify(error),
     );
-    return err;
+    return undefined;
   }
 }
 
-const responseFormatter = (results: Array<FulfilledResult<string | undefined>>): string[] => {
-  const fulfilled = results.filter(
-    (r): r is FulfilledResult<string | undefined> =>
-      r.status === 'fulfilled' && r.value !== undefined && r.value !== null,
-  );
-  const values = fulfilled.map(r => r.value).filter((v): v is string => typeof v === 'string');
-  return uniq(values);
+const responseFormatter = (results: Array<SettledResult<string | undefined>>): string[] => {
+  const out: string[] = [];
+  for (const r of results) {
+    if (r.status === 'fulfilled' && r.value !== undefined && r.value !== null && r.value !== '') {
+      out.push(r.value);
+    }
+  }
+  return out;
+};
+
+const resolveUrlForTrack = async (
+  track: string,
+  cache: Record<string, string>,
+): Promise<string | undefined> => {
+  const cached = cache[track];
+  if (cached) {
+    if (await isYoutubeWatchUrlValid(cached)) {
+      console.log('[youtube-video-searcher] cache hit:', track.slice(0, 80));
+      return cached;
+    }
+    console.log('[youtube-video-searcher] cache miss (invalid or removed video), re-search:', track.slice(0, 80));
+    delete cache[track];
+  }
+
+  const found = await youtubeVideoSearcher(track);
+  if (found) {
+    cache[track] = found;
+  }
+  return found;
 };
 
 /**
  * Searches YouTube for videos matching each track in the tracklist
  */
-const prAllYoutubeVideoSearches = (tracklist: string[]): Promise<string[]> => {
-  const promises: Promise<string | undefined>[] = tracklist.map(async (track) => {
-    const result = await youtubeVideoSearcher(track);
-    return typeof result === 'string' ? result : undefined;
-  });
+const prAllYoutubeVideoSearches = (tracklist: string[], cache: Record<string, string>): Promise<string[]> => {
+  const promises: Promise<string | undefined>[] = tracklist.map(track => resolveUrlForTrack(track, cache));
   return prAll(responseFormatter)(promises);
 };
 
 const logResults = (trackNames: string[]): string[] => {
-  console.log(`[youtube-video-searcher] Results: ${trackNames.length} url tracks founded.`);
+  console.log(`[youtube-video-searcher] Results: ${trackNames.length} track URLs found.`);
   return trackNames;
 };
 
 const searchYtVideos = async (tracklist: string[]): Promise<string[]> => {
-  const result = await prAllYoutubeVideoSearches(tracklist);
+  console.log('[youtube-video-searcher] URL cache file:', youtubeUrlCacheFilePath());
+  const cache = await loadYoutubeUrlCache();
+  const result = await prAllYoutubeVideoSearches(tracklist, cache);
+  await saveYoutubeUrlCache(cache);
   return logResults(result);
 };
 
 export default searchYtVideos;
-

@@ -51,6 +51,12 @@ None yet.
 
 None yet.
 
+## Quick Tasks Completed
+
+| Date       | ID        | Summary |
+|------------|-----------|---------|
+| 2026-04-05 | 260405-lqa | YouTube searcher: temp URL cache, oEmbed re-validation, long-form title filters, max 15 min |
+
 ## Session Continuity
 
 Last session: 2026-04-05T02:37:54.240Z
