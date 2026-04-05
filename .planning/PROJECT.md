@@ -24,11 +24,12 @@ A **local CLI** that turns a **Spotify playlist URL** or **1001tracklists.com** 
 - ✓ **Typed static config** — `config/local.json` imported as `Config` (`src/types/config.d.ts`).
 - ✓ **Output layout** — Folder naming and creation under `youtubeMp3Downloader.outputPath` (`src/folderManager/`).
 - ✓ **Engineering rules in `.cursor/rules`** — Validated in Phase 1: FP, memory/concurrency, utils/barrels, hooks (CLI-first), Node `engines` + `verify-phase1-rules` (GOV-01–04, QUAL-01).
+- ✓ **Dependency & config honesty (QUAL-02)** — Phase 3: YouTube search is `yt-search` only (no misleading YouTube Data API key in `Config`); legacy direct deps trimmed; README **`## Config keys`** + `config/local.json.example` match `src/types/config.d.ts`.
 
 ### Active
 
 - [ ] **Restore download reliability** — End-to-end path works on current Node/YouTube/Spotify ecosystem; **minimum v1 acceptance: Spotify playlist URL → completed downloads** (bulk, with clear failure reporting).
-- [ ] **Hardening** — Reduce fragility (deprecated deps, unused API paths, error handling) as needed to meet the v1 bar.
+- [ ] **Hardening** — Spotify API robustness (Phase 4), E2E acceptance (Phase 5), and residual error-handling gaps as needed to meet the v1 bar.
 
 ### Out of Scope
 
@@ -77,4 +78,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-04 after Phase 2 completion*
+*Last updated: 2026-04-05 after Phase 3 completion*
