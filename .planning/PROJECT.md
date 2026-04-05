@@ -25,11 +25,12 @@ A **local CLI** that turns a **Spotify playlist URL** or **1001tracklists.com** 
 - ✓ **Output layout** — Folder naming and creation under `youtubeMp3Downloader.outputPath` (`src/folderManager/`).
 - ✓ **Engineering rules in `.cursor/rules`** — Validated in Phase 1: FP, memory/concurrency, utils/barrels, hooks (CLI-first), Node `engines` + `verify-phase1-rules` (GOV-01–04, QUAL-01).
 - ✓ **Dependency & config honesty (QUAL-02)** — Phase 3: YouTube search is `yt-search` only (no misleading YouTube Data API key in `Config`); legacy direct deps trimmed; README **`## Config keys`** + `config/local.json.example` match `src/types/config.d.ts`.
+- ✓ **Spotify API robustness (SPOT-01/02)** — Phase 4: paged `getPlaylistTracks`, actionable Spotify errors.
+- ✓ **Spotify playlist E2E + regression checklist (DL-01)** — Phase 5: maintainer E2E recorded in **`05-01-SUMMARY.md`**; **`[execution][finished]`** counts fixed; **`05-MANUAL-ACCEPTANCE.md`** + README link; client-credentials **`market`** + README note on editorial vs user playlists.
 
 ### Active
 
-- [ ] **Restore download reliability** — End-to-end path works on current Node/YouTube/Spotify ecosystem; **minimum v1 acceptance: Spotify playlist URL → completed downloads** (bulk, with clear failure reporting).
-- [ ] **Hardening** — Spotify API robustness (Phase 4), E2E acceptance (Phase 5), and residual error-handling gaps as needed to meet the v1 bar.
+- [ ] **Next milestone** — Define post–v1.0 goals (download stack upgrades, CI, etc.) when ready.
 
 ### Out of Scope
 
@@ -55,8 +56,8 @@ A **local CLI** that turns a **Spotify playlist URL** or **1001tracklists.com** 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Engineering rules live in **`.cursor/rules/`** | User preference; keeps AI and humans aligned on repo conventions | Phase 1: `.mdc` rules + verification script |
-| **V1 acceptance** = Spotify playlist downloads work | User-defined minimum for “fixed” | — Pending |
-| **CLI-first** milestone | Existing architecture; UI/hooks rules follow actual code | — Pending |
+| **V1 acceptance** = Spotify playlist downloads work | User-defined minimum for “fixed” | Phase 5: pipeline + partial-failure reporting verified; confirm MP3s on host where ytdl works |
+| **CLI-first** milestone | Existing architecture; UI/hooks rules follow actual code | Phase 1–5 complete for v1.0 milestone |
 
 ## Evolution
 
@@ -78,4 +79,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-05 after Phase 3 completion*
+*Last updated: 2026-04-05 after Phase 5 completion*

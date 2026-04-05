@@ -14,14 +14,14 @@
 
 ### Download pipeline
 
-- [ ] **DL-01**: User can run the CLI with a valid **Spotify playlist URL** and configured `config/local.json` and reach **completed downloads** for resolvable tracks (partial failures reported, run does not abort silently).
+- [x] **DL-01**: User can run the CLI with a valid **Spotify playlist URL** and configured `config/local.json` and reach **completed downloads** for resolvable tracks (partial failures reported, run does not abort silently). *Phase 5: E2E documented in `05-01-SUMMARY.md`; confirm MP3 output on an environment where YouTube extraction succeeds.*
 - [x] **DL-02**: Download path uses a **maintainable** YouTube acquisition strategy (document choice: e.g. current stack hardened, or **yt-dlp**-backed path) and **FFmpeg** configuration is validated with clear errors if missing/invalid.
 - [x] **DL-03**: Output files land under the configured **output root** with **folder naming** behavior documented and stable for Spotify playlists.
 
 ### Spotify integration
 
-- [ ] **SPOT-01**: **Client credentials** (or documented auth flow) retrieves **all playlist tracks** for typical playlists (pagination handled).
-- [ ] **SPOT-02**: Errors from Spotify API surface as **actionable** messages (auth, rate limit, invalid ID).
+- [x] **SPOT-01**: **Client credentials** (or documented auth flow) retrieves **all playlist tracks** for typical playlists (pagination handled).
+- [x] **SPOT-02**: Errors from Spotify API surface as **actionable** messages (auth, rate limit, invalid ID).
 
 ### Quality & hardening
 
@@ -59,9 +59,9 @@
 | DL-02 | Phase 2 | Complete |
 | DL-03 | Phase 2 | Complete |
 | QUAL-02 | Phase 3 | Pending |
-| SPOT-01 | Phase 4 | Pending |
-| SPOT-02 | Phase 4 | Pending |
-| DL-01 | Phase 5 | Pending |
+| SPOT-01 | Phase 4 | Complete |
+| SPOT-02 | Phase 4 | Complete |
+| DL-01 | Phase 5 | Complete |
 
 **Coverage:**
 
@@ -71,4 +71,4 @@
 
 ---
 *Requirements defined: 2026-04-03*  
-*Last updated: 2026-04-03 after initial definition*
+*Last updated: 2026-04-05 after Phase 5 completion (DL-01)*

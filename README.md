@@ -80,6 +80,7 @@ No field in **`config/local.json`** exists solely for YouTube search after Phase
 | `youtubeMp3Downloader.youtubeVideoQuality` | Preferred YouTube stream quality hint for the downloader | Download |
 | `spotify.clientId` | Spotify Web API application client ID | Spotify |
 | `spotify.clientSecret` | Spotify Web API application client secret | Spotify |
+| `spotify.market` | Optional ISO 3166-1 alpha-2 country for playlist API queries (defaults to **US** if omitted) | Spotify |
 
 The canonical JSON template is **`config/local.json.example`**.
 
@@ -94,6 +95,8 @@ yarn download --url 'https://www.1001tracklists.com/tracklist/f82b001/john-00-fl
 ```bash
 yarn download --url 'https://open.spotify.com/playlist/your_playlist_id'
 ```
+
+The CLI uses **Spotify client credentials** (see `config/local.json`). That flow can read **user-owned public** playlists; **Spotify editorial** playlists (e.g. “Today’s Top Hits”) often return **404** from the Web API — pick a public playlist created by a user, or use the **Authorization Code** flow in your own fork if you need editorial access.
 
 ## Output layout (DL-03)
 
@@ -110,6 +113,10 @@ Use **`yarn download --url <url> --path ./my-run`** to override the download dir
 
 Downloads use the folder naming above. See **Output layout (DL-03)** for details.
 
+## Manual acceptance (v1 Spotify)
+
+After dependency or API changes, re-verify the Spotify playlist → MP3 path using the phase checklist: [05-MANUAL-ACCEPTANCE.md](./.planning/phases/05-spotify-playlist-e2e-acceptance/05-MANUAL-ACCEPTANCE.md).
+
 ## 🤝 Contributing
 
 Pull requests are welcome!
@@ -125,7 +132,7 @@ Use the Node version in `package.json` `engines` — see Requirements above.
 - `ID-ID` tracks will not be searched
 - Duplicate tracks will not be downloaded
 - For Spotify playlists:
-  - The playlist must be public
-  - Your Spotify API credentials must be properly configured
+  - The playlist must be **public**; with **client credentials**, prefer **user-created** public playlists (many **Spotify editorial** lists return **404** from the Web API).
+  - Your Spotify API credentials must be properly configured (`spotify.clientId` / `spotify.clientSecret`; optional **`spotify.market`** — see **Config keys**).
 
 

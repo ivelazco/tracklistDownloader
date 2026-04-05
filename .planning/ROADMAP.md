@@ -9,8 +9,8 @@ Stabilize a brownfield CLI that resolves tracklists (Spotify first), finds YouTu
 - [x] **Phase 1: Engineering rules & environment** (2026-04-03) — `.cursor/rules` for FP, memory, utils, hooks; document real Node/engine expectations.
 - [x] **Phase 2: Reliable download & output** (2026-04-04) — Maintainable YouTube acquisition and stable output folders.
 - [x] **Phase 3: Dependency & config cleanup** (2026-04-05) — Remove or wire dead paths; clearer FFmpeg/config failures.
-- [ ] **Phase 4: Spotify API robustness** — Pagination and actionable errors.
-- [ ] **Phase 5: Spotify playlist E2E acceptance** — Full CLI run proves v1 core value.
+- [x] **Phase 4: Spotify API robustness** (2026-04-05) — Pagination and actionable errors.
+- [x] **Phase 5: Spotify playlist E2E acceptance** (2026-04-05) — Full CLI run proves v1 core value.
 
 ## Phase Details
 
@@ -107,8 +107,8 @@ Plans:
 
 Plans:
 
-- [ ] 04-01: Review pagination and rate-limit handling in `spotify-scrapper.ts`.
-- [ ] 04-02: Normalize error messages for Spotify client failures.
+- [x] 04-01: Review pagination and rate-limit handling in `spotify-scrapper.ts`.
+- [x] 04-02: Normalize error messages for Spotify client failures.
 
 **UI hint:** no
 
@@ -132,8 +132,8 @@ Plans:
 
 Plans:
 
-- [ ] 05-01: Run full pipeline against real playlist; fix integration gaps discovered.
-- [ ] 05-02: Add acceptance checklist / notes for future YouTube or Spotify changes.
+- [x] 05-01: Run full pipeline against real playlist; fix integration gaps discovered.
+- [x] 05-02: Add acceptance checklist / notes for future YouTube or Spotify changes.
 
 **UI hint:** no
 
@@ -148,5 +148,7 @@ Plans:
 | 1. Engineering rules & environment | 3/3 | Complete | 2026-04-03 |
 | 2. Reliable download & output | 3/3 | Complete | 2026-04-04 |
 | 3. Dependency & config cleanup | 2/2 | Complete | 2026-04-05 |
-| 4. Spotify API robustness | 0/2 | Not started | - |
-| 5. Spotify playlist E2E acceptance | 0/2 | Not started | - |
+| 4. Spotify API robustness | 2/2 | Complete | 2026-04-05 |
+| 5. Spotify playlist E2E acceptance | 2/2 | Complete | 2026-04-05 |
+
+**Progress:** 5/5 phases complete (100%).

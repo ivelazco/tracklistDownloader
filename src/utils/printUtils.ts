@@ -25,9 +25,7 @@ const printEndOfExecution =
   <T,>(folderPath: string) =>
   ({ successfuls, fails }: GroupedResults<T>) =>
     console.log(
-      `[execution][finished] \n 
-      Successfuls: ${successfuls ? length(successfuls) : 0}}\n 
-      Fails: ${fails ? length(fails) : 0}S\n `,
+      `[execution][finished]\nSuccessfuls: ${successfuls ? length(successfuls) : 0}\nFails: ${fails ? length(fails) : 0}`,
     );
 
 const groupByStatus = <T,>(results: SettledResult<T>[]): GroupedResults<T> =>

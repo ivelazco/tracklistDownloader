@@ -12,6 +12,8 @@ export interface Config {
   spotify: {
     clientId: string;
     clientSecret: string;
+    /** ISO 3166-1 alpha-2; required for client-credentials playlist reads when Spotify has no user market. */
+    market?: string;
   };
 }
 

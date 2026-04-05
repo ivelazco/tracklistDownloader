@@ -37,6 +37,10 @@ export interface SpotifyPlaylistItem {
 export interface SpotifyPlaylistTracksResponse {
   body: {
     items: SpotifyPlaylistItem[];
+    next?: string | null;
+    total?: number;
+    limit?: number;
+    offset?: number;
     // Additional properties may exist but are not used in the codebase
   };
 }
