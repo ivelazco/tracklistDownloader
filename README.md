@@ -18,7 +18,6 @@ This community-driven project allows you to download music from various sources 
   - **Minimum:** Node.js 18+ (`engines.node` in `package.json`)
   - **Recommended:** Node.js 20 LTS or newer for Playwright-supported versions
 - [FFmpeg](https://github.com/adaptlearning/adapt_authoring/wiki/Installing-FFmpeg)
-- A valid [YouTube API Key](https://developers.google.com/youtube/v3/getting-started)
 - Spotify API credentials (only if using Spotify playlist feature)
 
 ## 🚀 Installation
@@ -36,13 +35,14 @@ npm install
 
 ### Configuration Setup
 
+Copy the tracked template to your local (gitignored) config: `cp config/local.json.example config/local.json`.
+
 1. Create a `config/local.json` file by copying `config/local.json.example`:
    ```bash
    cp config/local.json.example config/local.json
    ```
 
 2. Configure your credentials:
-   - For YouTube: Get your API key from [Google Cloud Console](https://console.cloud.google.com/)
    - For Spotify (if needed):
      1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
      2. Log in and create a new application
@@ -51,26 +51,11 @@ npm install
 
 3. Make sure to add `config/local.json` to your `.gitignore` to keep your credentials secure.
 
-Example configuration:
+The canonical JSON shape and placeholders are in **`config/local.json.example`** — copy that file and fill in values (see **Config keys** below).
 
-```json
-{
-  "youtubeMp3Downloader": {
-    "ffmpegPath": "ffmpeg",
-    "outputPath": "/Users/user/Music/youtube-downloader",
-    "youtubeVideoQuality": "highest",
-    "queueParallelism": 10,
-    "progressTimeout": 2000
-  },
-  "youtubeVideoSearcher": {
-    "apiKey": "YOUR_YOUTUBE_API_KEY"
-  },
-  "spotify": {
-    "clientId": "your_spotify_client_id_here",
-    "clientSecret": "your_spotify_client_secret_here"
-  }
-}
-```
+## YouTube search (QUAL-02)
+
+Track → YouTube URL resolution is done with the **`yt-search`** npm package against public search results. The CLI does **not** call **YouTube Data API** **v3**, so no Google Cloud API key is required for this step.
 
 ## Download strategy (DL-02)
 
@@ -81,6 +66,22 @@ Relevant **`youtubeMp3Downloader`** keys: **`ffmpegPath`**, **`outputPath`**, **
 Install **[FFmpeg](https://github.com/adaptlearning/adapt_authoring/wiki/Installing-FFmpeg)** and set **`ffmpegPath`** to the executable (for example `ffmpeg` on your PATH).
 
 **`YTDL_NO_UPDATE`** is set in **`lambda.ts`** before other imports to reduce unwanted `ytdl-core` update behavior.
+
+## Config keys
+
+No field in **`config/local.json`** exists solely for YouTube search after Phase 3 plan **03-01** — search uses **`yt-search`**; see **YouTube search (QUAL-02)** above.
+
+| Key | Purpose (one line) | Stage |
+| --- | --- | --- |
+| `youtubeMp3Downloader.ffmpegPath` | Path to the `ffmpeg` executable used for transcoding | Download |
+| `youtubeMp3Downloader.outputPath` | Root folder for playlist output directories | Paths / output |
+| `youtubeMp3Downloader.progressTimeout` | Timeout (ms) for download progress reporting | Download |
+| `youtubeMp3Downloader.queueParallelism` | Max concurrent downloads in application code | Download |
+| `youtubeMp3Downloader.youtubeVideoQuality` | Preferred YouTube stream quality hint for the downloader | Download |
+| `spotify.clientId` | Spotify Web API application client ID | Spotify |
+| `spotify.clientSecret` | Spotify Web API application client secret | Spotify |
+
+The canonical JSON template is **`config/local.json.example`**.
 
 ## 🖥️ Usage
 

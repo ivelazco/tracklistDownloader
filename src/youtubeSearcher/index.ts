@@ -1,30 +1,9 @@
-import YouTube from 'simple-youtube-api';
 import yts from 'yt-search';
-import { prAll, tapAfter } from '../utils';
-import {
-  map,
-  head,
-  compose,
-  prop,
-  pipe,
-  uniq,
-  chain,
-  reject,
-  either,
-  propSatisfies,
-  complement,
-  propEq,
-} from 'ramda';
-import { isNilOrEmpty } from '@flybondi/ramda-land';
-import { Config } from '../types/config';
+import { prAll } from '../utils';
+import { uniq } from 'ramda';
 import { YouTubeSearchResult, YouTubeVideo, FulfilledResult } from '../types';
-import configData from '../../config/local.json';
 
-const config = configData as Config;
-const youtube = new YouTube(config.youtubeVideoSearcher.apiKey);
-const propNotEq = complement(propEq);
-
-const getURLFromHead = compose(prop('url'), head) as (videos: YouTubeVideo[]) => string | undefined;
+// PHASE3-SEARCH — YouTube URL lookup uses yt-search only (no YouTube Data API v3 client).
 
 /**
  * Checks if a video title contains blacklisted words

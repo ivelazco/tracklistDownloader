@@ -14,7 +14,7 @@
 ## Runtime
 
 **Environment:**
-- Node.js — `engines.node` in `package.json` specifies `>=10.15.3` (modern TypeScript 5.x and Playwright imply a current LTS in practice)
+- Node.js — `engines.node` in `package.json` specifies `>=18` (Playwright and TypeScript toolchain; Node 20+ LTS recommended for day-to-day work)
 
 **Package Manager:**
 - Yarn Berry — `packageManager` field: `yarn@4.9.2`; lockfile: `yarn.lock` present
@@ -49,12 +49,14 @@
 
 **YouTube / ytdl ecosystem (declared):**
 - `ytdl-core`, `@distube/ytdl-core` — pinned via `package.json` `resolutions` for `@distube/ytdl-core`; consumed transitively by download stack, not imported directly in `src/`
-- `youtube-mp3-downloader`, `youtube-mp3-downloader-fixed` — declared in `package.json`; downloader implementation in repo uses `ytdl-mp3` instead
+- Downloader surface in `src/youtubeDownloader/index.ts` uses **`ytdl-mp3`**; legacy `youtube-mp3-downloader` / `youtube-mp3-downloader-fixed` direct deps were removed in Phase 3 (QUAL-02).
 
-**Legacy / questionable usage:**
-- `simple-youtube-api` — `YouTube` instance constructed with `config.youtubeVideoSearcher.apiKey` in `src/youtubeSearcher/index.ts`, but **search results come from `yt-search` only**; the API client is unused in the current code path
-- `request`, `request-promise` — deprecated HTTP stack; **no imports under `src/`** detected
-- `fs` (^0.0.1-security) — npm stub; Node built-in `fs` used via `import * as fs from 'fs'` in application code
+**Search:**
+- **`yt-search`** only in `src/youtubeSearcher/index.ts` — no YouTube Data API v3 client; no `config` key for a Google API key on the search path (Phase 3).
+
+**Legacy / transitive (post–Phase 3 trim):**
+- Direct deps **`request`**, **`request-promise`**, npm **`fs`** stub, **`simple-youtube-api`**, and duplicate **`youtube-mp3-downloader*`** packages were removed from `package.json` after `src/` usage checks.
+- **`request`** does not appear in the install tree (`yarn why request` produces no path) — nothing to document as a remaining transitive pull.
 
 **Tooling (dev):**
 - ESLint 6 + `babel-eslint` parser, `standard`, `prettier`, `@typescript-eslint/*`, `eslint-plugin-ramda`, Flowtype plugins — config in `.eslintrc.json`
@@ -67,7 +69,7 @@
 - No `.env` files detected at repository root; secrets and paths live in JSON config (see below)
 
 **Application config:**
-- `config/local.json` — loaded as JSON import in `src/youtubeDownloader/index.ts`, `src/youtubeSearcher/index.ts`, `src/sourceScrappers/spotify-scrapper.ts`, `src/folderManager/index.ts`
+- `config/local.json` — loaded as JSON import in `src/youtubeDownloader/index.ts`, `src/sourceScrappers/spotify-scrapper.ts`, `src/folderManager/index.ts` (search does not read config for API keys)
 - Shape documented in `src/types/config.d.ts` (`Config` interface)
 - `tsconfig.json` excludes `config/local.json` from compilation include set (still resolved at runtime via `resolveJsonModule`)
 

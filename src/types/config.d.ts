@@ -9,9 +9,6 @@ export interface Config {
     queueParallelism: number;
     progressTimeout: number;
   };
-  youtubeVideoSearcher: {
-    apiKey: string;
-  };
   spotify: {
     clientId: string;
     clientSecret: string;

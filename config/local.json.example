@@ -6,9 +6,6 @@
     "queueParallelism": 10,
     "progressTimeout": 2000
   },
-  "youtubeVideoSearcher": {
-    "apiKey": "<Google API Key>"
-  },
   "spotify": {
     "clientId": "your_spotify_client_id_here",
     "clientSecret": "your_spotify_client_secret_here"
