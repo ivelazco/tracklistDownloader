@@ -42,7 +42,7 @@ created: 2026-04-05
 | 05-01-02 | 01 | 1 | DL-01 | manual | `rg "## E2E run" .planning/phases/05-spotify-playlist-e2e-acceptance/05-01-SUMMARY.md` | ✅ | ⬜ pending |
 | 05-01-03 | 01 | 1 | DL-01 | manual | `yarn type-check` | ✅ | ⬜ pending |
 | 05-02-01 | 02 | 2 | DL-01 | grep/docs | `rg "yarn download --url" .planning/phases/05-spotify-playlist-e2e-acceptance/05-MANUAL-ACCEPTANCE.md` | ✅ | ⬜ pending |
-| 05-02-02 | 02 | 2 | DL-01 | grep/docs | `rg "\[05-MANUAL-ACCEPTANCE\.md\]" README.md` | ✅ | ⬜ pending |
+| 05-02-02 | 02 | 2 | DL-01 | grep/docs | `rg` for `[05-MANUAL-ACCEPTANCE.md](./.planning/phases/05-spotify-playlist-e2e-acceptance/05-MANUAL-ACCEPTANCE.md)` in README | ✅ | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
