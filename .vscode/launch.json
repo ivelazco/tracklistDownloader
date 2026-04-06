@@ -4,6 +4,7 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
+    
     {
       "type": "node",
       "request": "launch",
@@ -14,7 +15,7 @@
       "program": "${workspaceFolder}\\lambda.js",
       "args": [
         "--url",
-        "https://www.1001tracklists.com/tracklist/2pxkj38t/paul-van-dyk-sunday-sessions-23-sunset-boat-party-set-potsdam-germany-2020-08-16.html"
+        "https://www.1001tracklists.com/tracklist/2b345bbt/hernan-cattaneo-sunsetstrip-campo-argentino-de-polo-buenos-aires-argentina-2025-03-02.html"
       ]
     },
     {
@@ -27,7 +28,7 @@
       "program": "${workspaceFolder}\\lambda.js",
       "args": [
         "--url",
-        "https://open.spotify.com/playlist/57h9Elahq4VkXNn7axHXT0?si=3htiz5azTTOXaKQ_0xwd2A"
+        "https://open.spotify.com/playlist/0Q4JvzeT0q3FLsj5fqffMV?si=4675aba94c7b470c"
       ]
     }
   ]

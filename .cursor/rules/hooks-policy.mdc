@@ -1,0 +1,16 @@
+---
+description: "React hooks policy (CLI-first)"
+alwaysApply: true
+---
+
+# Hooks (GOV-04)
+
+## MUST
+
+CLI-only codebase today — React hooks N/A.
+
+If a UI layer is added later, add dedicated hooks rules under `.cursor/rules/` and link them from `engineering-overview.mdc`. Do not add full React style guides preemptively.
+
+## AVOID
+
+Introducing hooks in `src/` until a UI exists.

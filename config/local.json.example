@@ -4,13 +4,13 @@
     "outputPath": "<OUTPUT_PATH>",
     "youtubeVideoQuality": "highest",
     "queueParallelism": 10,
-    "progressTimeout": 2000
-  },
-  "youtubeVideoSearcher": {
-    "apiKey": "<Google API Key>"
+    "progressTimeout": 2000,
+    "downloadBackend": "auto",
+    "ytDlpPath": "yt-dlp"
   },
   "spotify": {
     "clientId": "your_spotify_client_id_here",
-    "clientSecret": "your_spotify_client_secret_here"
+    "clientSecret": "your_spotify_client_secret_here",
+    "market": "US"
   }
 }

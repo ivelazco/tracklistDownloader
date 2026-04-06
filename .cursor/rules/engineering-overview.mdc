@@ -1,0 +1,14 @@
+---
+description: "TracklistDownloader — engineering rules index"
+alwaysApply: true
+---
+
+# Engineering rules
+
+Rules are split by topic. Read the relevant file before editing matching `src/` areas.
+
+- `functional-style.mdc` — Ramda, `pipe`/`compose`, `prAll`, guards, `tapAfter` patterns.
+- `utils-and-modules.mdc` — `src/utils`, barrels, naming, logging namespaces.
+- `hooks-policy.mdc` — CLI-first; React hooks policy when UI exists.
+- `memory-and-concurrency.mdc` — `prAll` semantics, Playwright lifecycle, parallelism risks.
+- `node-engines.mdc` — Node version floor and links to `package.json` / README.

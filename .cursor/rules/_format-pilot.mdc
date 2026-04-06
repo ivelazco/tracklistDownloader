@@ -1,0 +1,12 @@
+---
+description: "Phase 1 pilot — Cursor rule file format for tracklistDownloader"
+alwaysApply: false
+---
+
+# Format pilot
+
+## Format decision
+
+Repository standard: Cursor project rules use .mdc files with YAML frontmatter (description, alwaysApply, optional globs).
+
+Pilot created for Phase 1 plan 01-01; executor confirmed extension .mdc is used.
