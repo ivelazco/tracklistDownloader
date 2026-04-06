@@ -11,6 +11,7 @@ alwaysApply: false
 
 - Prefer `pipe` / `compose` and `@flybondi/ramda-land` helpers (`isNilOrEmpty`, etc.) consistent with `src/handler.ts`.
 - Use **`prAll`** when aggregating a batch of async work with **`Promise.allSettled`** (mixed success/failure). Do not use raw **`Promise.all`** for those batches.
+- Use **`mapWithConcurrencySettled`** from **`src/utils/index.ts`** when the same kind of batch must **cap in-flight concurrency** (playlist-scale work); **`src/youtubeSearcher/index.ts`** is the reference.
 - Use **`tapAfter`** from `src/utils/index.ts` for post-run logging wrappers (see `src/sourceScrappers/1001-scrapper.ts` and `src/sourceScrappers/spotify-scrapper.ts` default export pattern). Canonical exports: `src/utils/index.ts`.
 
 ## AVOID

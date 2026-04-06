@@ -171,3 +171,6 @@ debug_captcha*.png
 
 # ytdl-core temporary files
 *-player-script.js
+
+.yarn/
+scripts/

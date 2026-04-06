@@ -9,13 +9,14 @@ alwaysApply: false
 
 ## MUST
 
-- Treat **`prAll`** as **settlement aggregation** over `Promise.allSettled` — it does **not** cap concurrency. Definition: `src/utils/index.ts`. Consumers: `src/youtubeDownloader/index.ts`, `src/youtubeSearcher/index.ts` (map → promise array → `prAll(handler)(promises)`).
+- Treat **`prAll`** as **settlement aggregation** over `Promise.allSettled` — it does **not** cap concurrency. Definition: `src/utils/index.ts`. Consumers include batch flows that already build a fixed promise array (e.g. download batches).
+- **`mapWithConcurrencySettled`** (`src/utils/concurrencyPool.ts`, re-exported from `src/utils/index.ts`) caps in-flight work while preserving per-index outcomes — **`src/youtubeSearcher/index.ts`** uses it with **`searchParallelism`** / **`queueParallelism`**.
 - **Playwright:** `chromium.launch` → work → **`browser.close()`** on success **and** on error paths. Ground truth: `src/sourceScrappers/1001-scrapper.ts` (`fetchWithConsent`). Avoid leaking browsers.
 
 ## AVOID
 
 - Spawning unbounded concurrent `chromium.launch` calls for playlist-scale work without an explicit design.
-- Adding new unbounded `Promise.all` over large **N** without an explicit cap or batching strategy. Current mappers can issue **N** simultaneous network/download operations; prefer documenting batching/limiters for future refactors over silent fan-out growth.
+- Adding new unbounded `Promise.all` (or unbounded fan-out before **`mapWithConcurrencySettled`**) over large **N** without an explicit cap or batching strategy.
 
 ## Direction
 

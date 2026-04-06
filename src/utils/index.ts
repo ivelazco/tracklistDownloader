@@ -9,6 +9,7 @@ import {
   youtubeUrlCacheFilePath,
 } from './youtubeUrlCache';
 import { SettledResult } from '../types';
+import { mapWithConcurrencySettled } from './concurrencyPool';
 
 // Generic function type for prAll
 type PromiseSettledHandler<T, R> = (results: Array<SettledResult<T>>) => R;
@@ -30,6 +31,7 @@ const curriedTapAfter = curryN(3, tapAfter);
 
 export {
   prAll,
+  mapWithConcurrencySettled,
   curriedTapAfter as tapAfter,
   printVideoTitle,
   printFailVideoTitle,

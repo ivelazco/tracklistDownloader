@@ -4,8 +4,9 @@
     "outputPath": "<OUTPUT_PATH>",
     "youtubeVideoQuality": "highest",
     "queueParallelism": 10,
+    "searchParallelism": 8,
     "progressTimeout": 2000,
-    "downloadBackend": "auto",
+    "downloadBackend": "auto",  
     "ytDlpPath": "yt-dlp"
   },
   "spotify": {
