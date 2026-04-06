@@ -8,6 +8,10 @@ export interface Config {
     youtubeVideoQuality: string;
     queueParallelism: number;
     progressTimeout: number;
+    /** Default `auto`: use yt-dlp when the binary runs; else ytdl-mp3. */
+    downloadBackend?: 'auto' | 'ytdl-mp3' | 'yt-dlp';
+    /** Executable for yt-dlp (default `yt-dlp`). Used when backend resolves to yt-dlp. */
+    ytDlpPath?: string;
   };
   spotify: {
     clientId: string;

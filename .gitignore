@@ -158,6 +158,7 @@ flow-typed/
 
 # build files
 build/
+dist/
 
 # ffmpeg files
 ffmpeg/

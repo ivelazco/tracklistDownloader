@@ -59,13 +59,15 @@ Track → YouTube URL resolution is done with the **`yt-search`** npm package ag
 
 ## Download strategy (DL-02)
 
-The CLI downloads audio with **`ytdl-mp3`**, which bundles **`ffmpeg-static`** for transcoding on the default code path. **`youtubeMp3Downloader.ffmpegPath`** in **`config/local.json`** is still validated before downloads start so misconfiguration fails fast; if **`STRATEGY=yt-dlp`** appears in `src/youtubeDownloader/index.ts`, that path would use **`ffmpegPath`** with **`yt-dlp`**.
+By default (**`downloadBackend`: `auto`**), the CLI uses **[yt-dlp](https://github.com/yt-dlp/yt-dlp)** when `youtubeMp3Downloader.ytDlpPath` runs successfully (typically `yt-dlp` on your PATH). That path shells out to yt-dlp and passes **`--ffmpeg-location`** using the directory of **`youtubeMp3Downloader.ffmpegPath`**, then writes MP3s with the same filename rules as before (**`getYtdlMp3OutputPath`** / ytdl-mp3-style sanitization).
 
-Relevant **`youtubeMp3Downloader`** keys: **`ffmpegPath`**, **`outputPath`**, **`queueParallelism`**, **`youtubeVideoQuality`**, **`progressTimeout`**. **`queueParallelism`** limits how many tracks download at once in **application code** (not inside **`ytdl-mp3`**).
+If yt-dlp is not installed or fails the probe, the CLI falls back to **`ytdl-mp3`** (**`@distube/ytdl-core`**), which bundles **`ffmpeg-static`**. You can force one stack with **`downloadBackend`**: **`ytdl-mp3`** or **`yt-dlp`** (the latter fails fast with a clear error if the binary is missing).
 
-Install **[FFmpeg](https://github.com/adaptlearning/adapt_authoring/wiki/Installing-FFmpeg)** and set **`ffmpegPath`** to the executable (for example `ffmpeg` on your PATH).
+Relevant **`youtubeMp3Downloader`** keys: **`ffmpegPath`**, **`outputPath`**, **`queueParallelism`**, **`youtubeVideoQuality`**, **`progressTimeout`**, **`downloadBackend`**, **`ytDlpPath`**. **`queueParallelism`** limits how many tracks download at once in **application code**.
 
-**`YTDL_NO_UPDATE`** is set in **`lambda.ts`** before other imports to reduce unwanted `ytdl-core` update behavior.
+Install **[FFmpeg](https://github.com/adaptlearning/adapt_authoring/wiki/Installing-FFmpeg)** and set **`ffmpegPath`** to the executable (for example `ffmpeg` on your PATH). Install **[yt-dlp](https://github.com/yt-dlp/yt-dlp/releases)** for the recommended download path when YouTube changes break pure JS extractors.
+
+**`YTDL_NO_UPDATE`** is set in **`lambda.ts`** before other imports to reduce unwanted `ytdl-core` update behavior on the fallback path.
 
 ## Config keys
 
@@ -73,11 +75,13 @@ No field in **`config/local.json`** exists solely for YouTube search after Phase
 
 | Key | Purpose (one line) | Stage |
 | --- | --- | --- |
-| `youtubeMp3Downloader.ffmpegPath` | Path to the `ffmpeg` executable used for transcoding | Download |
+| `youtubeMp3Downloader.ffmpegPath` | Path to the `ffmpeg` executable (validated always; used by yt-dlp for encode) | Download |
 | `youtubeMp3Downloader.outputPath` | Root folder for playlist output directories | Paths / output |
 | `youtubeMp3Downloader.progressTimeout` | Timeout (ms) for download progress reporting | Download |
 | `youtubeMp3Downloader.queueParallelism` | Max concurrent downloads in application code | Download |
-| `youtubeMp3Downloader.youtubeVideoQuality` | Preferred YouTube stream quality hint for the downloader | Download |
+| `youtubeMp3Downloader.youtubeVideoQuality` | Preferred YouTube stream quality hint for the ytdl-mp3 path | Download |
+| `youtubeMp3Downloader.downloadBackend` | `auto` (default), `yt-dlp`, or `ytdl-mp3` — see **Download strategy (DL-02)** | Download |
+| `youtubeMp3Downloader.ytDlpPath` | yt-dlp executable (default `yt-dlp`) when backend resolves to yt-dlp | Download |
 | `spotify.clientId` | Spotify Web API application client ID | Spotify |
 | `spotify.clientSecret` | Spotify Web API application client secret | Spotify |
 | `spotify.market` | Optional ISO 3166-1 alpha-2 country for playlist API queries (defaults to **US** if omitted) | Spotify |

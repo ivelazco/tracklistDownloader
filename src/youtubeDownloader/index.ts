@@ -1,9 +1,12 @@
+import ytdl from '@distube/ytdl-core';
 import { Downloader } from 'ytdl-mp3';
 import { Config } from '../types/config';
 import configData from '../../config/local.json';
 import { compose, when } from 'ramda';
 import { isNilOrEmpty, rejectNilOrEmpty } from '@flybondi/ramda-land';
-import { printResults } from '../utils';
+import { getYtdlMp3OutputPath, printResults } from '../utils';
+import { resolveDownloadBackend } from '../utils/resolveDownloadBackend';
+import { downloadOrSkipWithYtDlp } from '../utils/ytDlpExec';
 import * as fs from 'fs';
 
 /*
@@ -22,9 +25,9 @@ import * as fs from 'fs';
 
 /*
  * PHASE2-DECISION
- * STRATEGY=ytdl-mp3-only
- * ytdl-mp3 transcodes via bundled ffmpeg-static; config.youtubeMp3Downloader.ffmpegPath is not
- * consumed by the ytdl-mp3 Downloader for encoding (honesty for D-08 / README in plan 02-02).
+ * STRATEGY=auto|ytdl-mp3|yt-dlp (config youtubeMp3Downloader.downloadBackend, default auto)
+ * When backend is yt-dlp, subprocess uses youtubeMp3Downloader.ffmpegPath directory for --ffmpeg-location.
+ * ytdl-mp3 path still uses bundled ffmpeg-static inside the library; ffmpegPath is validated in handler (D-08).
  */
 
 // DownloaderItemInformation is not exported, so we define it locally
@@ -35,6 +38,35 @@ type DownloaderItemInformation = {
   outputFile: string;
   trackNo: null | number;
   year: null | string;
+};
+
+const skippedItem = (outputFile: string): DownloaderItemInformation => ({
+  album: null,
+  artist: null,
+  genre: null,
+  outputFile,
+  trackNo: null,
+  year: null,
+});
+
+/**
+ * Resolves the MP3 path ytdl-mp3 would use; skips download if it already exists.
+ * Uses one getInfo here; when a download runs, ytdl-mp3 calls getInfo again (same as before for that path).
+ */
+const downloadOrSkipIfExists = async (
+  dl: Downloader,
+  folderPath: string,
+  url: string,
+  indexLabel: string,
+): Promise<DownloaderItemInformation> => {
+  const info = await ytdl.getInfo(url);
+  const title = info.videoDetails.title;
+  const outputFile = getYtdlMp3OutputPath(folderPath, title);
+  if (fs.existsSync(outputFile)) {
+    console.log(`[ytDownloader] ${indexLabel} skip (already on disk):`, outputFile);
+    return skippedItem(outputFile);
+  }
+  return dl.downloadSong(url) as Promise<DownloaderItemInformation>;
 };
 
 const config = configData as Config;
@@ -84,11 +116,33 @@ const ytDownloader = (videos: (string | null | undefined)[], folderPath: string)
   };
   console.log('[ytDownloader] Downloader config:', downloaderConfig);
 
-  const dl = new Downloader(downloaderConfig as any);
-  console.log('[ytDownloader] Downloader instance created');
+  const backend = resolveDownloadBackend(config.youtubeMp3Downloader);
+  const ytDlpPath = (config.youtubeMp3Downloader.ytDlpPath ?? 'yt-dlp').trim();
+  console.log('[ytDownloader] Download backend:', backend);
+
+  const dl =
+    backend === 'ytdl-mp3' ? new Downloader(downloaderConfig as any) : null;
+  if (backend === 'ytdl-mp3') {
+    console.log('[ytDownloader] Downloader instance created (ytdl-mp3)');
+  }
 
   const limit = Math.max(1, Number(config.youtubeMp3Downloader.queueParallelism) || 1);
   console.log('[ytDownloader] Concurrency ceiling (queueParallelism):', limit);
+
+  const runOne = (url: string, label: string): Promise<DownloaderItemInformation> => {
+    if (backend === 'yt-dlp') {
+      return downloadOrSkipWithYtDlp(
+        ytDlpPath,
+        config.youtubeMp3Downloader.ffmpegPath,
+        folderPath,
+        url,
+      );
+    }
+    if (!dl) {
+      throw new Error('[ytDownloader] internal error: ytdl-mp3 Downloader not initialized');
+    }
+    return downloadOrSkipIfExists(dl, folderPath, url, label);
+  };
 
   const runBatched = async () => {
     const combined: PromiseSettledResult<DownloaderItemInformation>[] = [];
@@ -97,17 +151,15 @@ const ytDownloader = (videos: (string | null | undefined)[], folderPath: string)
       const batch = transformedVideos.slice(i, i + limit);
       const batchPromises = batch.map((url: string, batchIdx: number) => {
         const index = i + batchIdx;
-        console.log(
-          `[ytDownloader] Creating promise for video ${index + 1}/${transformedVideos.length}:`,
-          url,
-        );
-        const promise = dl.downloadSong(url);
+        const label = `Video ${index + 1}/${transformedVideos.length}`;
+        console.log(`[ytDownloader] Creating promise for ${label}:`, url);
+        const promise = runOne(url, label);
         promise
           .then((result) => {
-            console.log(`[ytDownloader] Video ${index + 1} downloaded successfully:`, result);
+            console.log(`[ytDownloader] ${label} ok:`, result.outputFile);
           })
           .catch((error) => {
-            console.error(`[ytDownloader] Video ${index + 1} failed:`, error);
+            console.error(`[ytDownloader] ${label} failed:`, error);
           });
         return promise;
       });
