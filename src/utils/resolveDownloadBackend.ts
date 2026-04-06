@@ -3,6 +3,8 @@ import type { Config } from '../types/config';
 
 export type ResolvedDownloadBackend = 'ytdl-mp3' | 'yt-dlp';
 
+type DownloaderSection = Config['youtubeMp3Downloader'];
+
 const probeYtDlp = (ytDlpPath: string): boolean => {
   const r = spawnSync(ytDlpPath, ['--version'], {
     encoding: 'utf-8',
@@ -11,7 +13,9 @@ const probeYtDlp = (ytDlpPath: string): boolean => {
   return r.error == null && r.status === 0;
 };
 
-type DownloaderSection = Config['youtubeMp3Downloader'];
+/** True when `youtubeMp3Downloader.ytDlpPath` (default `yt-dlp`) runs — used for search and download. */
+export const isYtDlpAvailable = (section: DownloaderSection): boolean =>
+  probeYtDlp((section.ytDlpPath ?? 'yt-dlp').trim());
 
 /**
  * DL-02: Prefer yt-dlp when `downloadBackend` is `auto` (default) and the binary works;
@@ -25,14 +29,14 @@ export const resolveDownloadBackend = (section: DownloaderSection): ResolvedDown
     return 'ytdl-mp3';
   }
   if (mode === 'yt-dlp') {
-    if (!probeYtDlp(ytPath)) {
+    if (!isYtDlpAvailable(section)) {
       throw new Error(
         `youtubeMp3Downloader.downloadBackend is "yt-dlp" but "${ytPath}" did not run (--version failed). Install yt-dlp (https://github.com/yt-dlp/yt-dlp) or set youtubeMp3Downloader.ytDlpPath to the executable.`,
       );
     }
     return 'yt-dlp';
   }
-  if (probeYtDlp(ytPath)) {
+  if (isYtDlpAvailable(section)) {
     return 'yt-dlp';
   }
   console.log(

@@ -1,8 +1,20 @@
 import yts from 'yt-search';
-import { prAll, loadYoutubeUrlCache, saveYoutubeUrlCache, isYoutubeWatchUrlValid, youtubeUrlCacheFilePath } from '../utils';
-import { YouTubeSearchResult, YouTubeVideo, SettledResult } from '../types';
+import configData from '../../config/local.json';
+import {
+  loadYoutubeUrlCache,
+  mapWithConcurrencySettled,
+  saveYoutubeUrlCache,
+  isYoutubeWatchUrlValid,
+  youtubeUrlCacheFilePath,
+} from '../utils';
+import { isYtDlpAvailable } from '../utils/resolveDownloadBackend';
+import { searchYoutubeWithYtDlp } from '../utils/ytDlpExec';
+import { Config } from '../types/config';
+import { YouTubeSearchResult, YouTubeVideo } from '../types';
 
-// PHASE3-SEARCH — YouTube URL lookup uses yt-search only (no YouTube Data API v3 client).
+// PHASE3-SEARCH — YouTube URL lookup: yt-dlp `ytsearchN:` when the binary is available, else yt-search (no Data API v3).
+
+const config = configData as Config;
 
 /** Inclusive max length for a single track (not DJ sets / long mixes). */
 const MAX_TRACK_SECONDS = 15 * 60;
@@ -39,34 +51,65 @@ const durationToSeconds = (timestamp: string): number => {
   return Number.POSITIVE_INFINITY;
 };
 
+type SearchCandidate = {
+  title: string;
+  url: string;
+  /** `null` when duration unknown — length filter skipped, title heuristics still apply. */
+  durationSeconds: null | number;
+};
+
+const fromYtsVideo = (video: YouTubeVideo): SearchCandidate => {
+  const seconds = durationToSeconds(video.duration.timestamp);
+  return {
+    title: video.title,
+    url: video.url,
+    durationSeconds: seconds === Number.POSITIVE_INFINITY ? null : seconds,
+  };
+};
+
 /**
  * Finds the first search result that looks like a single track, not a long-form upload.
  */
-const findFirstValidVideo = (videos: YouTubeVideo[]): YouTubeVideo | undefined =>
+const findFirstValidVideo = (videos: SearchCandidate[]): SearchCandidate | undefined =>
   videos.find(video => {
-    const seconds = durationToSeconds(video.duration.timestamp);
-    return !titleLooksLikeLongForm(video.title) && seconds <= MAX_TRACK_SECONDS;
+    if (titleLooksLikeLongForm(video.title)) return false;
+    if (video.durationSeconds == null) return true;
+    return video.durationSeconds <= MAX_TRACK_SECONDS;
   });
 
 /**
  * Searches for a YouTube video matching the track name with specific criteria
  */
 async function youtubeVideoSearcher(track: string): Promise<string | undefined> {
+  const dl = config.youtubeMp3Downloader;
+
+  if (isYtDlpAvailable(dl)) {
+    const ytPath = (dl.ytDlpPath ?? 'yt-dlp').trim();
+    try {
+      const hits = await searchYoutubeWithYtDlp(ytPath, track, 20);
+      const pick = findFirstValidVideo(hits);
+      if (pick?.url) return pick.url;
+    } catch (err) {
+      console.log('[Error][youtube-video-searcher][yt-dlp] ', err instanceof Error ? err.message : JSON.stringify(err));
+    }
+  }
+
   try {
     const r = (await yts(track)) as YouTubeSearchResult;
-    const validVideo = findFirstValidVideo(r.videos);
+    const mapped = r.videos.map(fromYtsVideo);
+    const validVideo = findFirstValidVideo(mapped);
     return validVideo ? validVideo.url : undefined;
   } catch (err) {
     const error = err as { code?: number; message?: string };
     console.log(
-      '[Error][youtube-video-searcher] ',
+      '[Error][youtube-video-searcher][yt-search] ',
       error.code === 403 ? error.message : JSON.stringify(error),
     );
     return undefined;
   }
 }
 
-const responseFormatter = (results: Array<SettledResult<string | undefined>>): string[] => {
+const responseFormatter = (results: PromiseSettledResult<string | undefined>[]): string[] => {
   const out: string[] = [];
   for (const r of results) {
     if (r.status === 'fulfilled' && r.value !== undefined && r.value !== null && r.value !== '') {
@@ -97,12 +140,20 @@ const resolveUrlForTrack = async (
   return found;
 };
 
+const searchConcurrencyLimit = (section: Config['youtubeMp3Downloader']): number => {
+  const raw = section.searchParallelism ?? section.queueParallelism;
+  return Math.max(1, Number(raw) || 1);
+};
+
 /**
- * Searches YouTube for videos matching each track in the tracklist
+ * Searches YouTube for videos matching each track in the tracklist (bounded concurrency).
  */
-const prAllYoutubeVideoSearches = (tracklist: string[], cache: Record<string, string>): Promise<string[]> => {
-  const promises: Promise<string | undefined>[] = tracklist.map(track => resolveUrlForTrack(track, cache));
-  return prAll(responseFormatter)(promises);
+const runYoutubeVideoSearches = async (tracklist: string[], cache: Record<string, string>): Promise<string[]> => {
+  const limit = searchConcurrencyLimit(config.youtubeMp3Downloader);
+  const settled = await mapWithConcurrencySettled(tracklist, limit, (track: string) =>
+    resolveUrlForTrack(track, cache),
+  );
+  return responseFormatter(settled);
 };
 
 const logResults = (trackNames: string[]): string[] => {
@@ -111,9 +162,16 @@ const logResults = (trackNames: string[]): string[] => {
 };
 
 const searchYtVideos = async (tracklist: string[]): Promise<string[]> => {
+  const dl = config.youtubeMp3Downloader;
+  console.log(
+    '[youtube-video-searcher] engine:',
+    isYtDlpAvailable(dl) ? `yt-dlp (${(dl.ytDlpPath ?? 'yt-dlp').trim()})` : 'yt-search',
+  );
+  const searchLimit = searchConcurrencyLimit(dl);
+  console.log('[youtube-video-searcher] search concurrency (searchParallelism || queueParallelism):', searchLimit);
   console.log('[youtube-video-searcher] URL cache file:', youtubeUrlCacheFilePath());
   const cache = await loadYoutubeUrlCache();
-  const result = await prAllYoutubeVideoSearches(tracklist, cache);
+  const result = await runYoutubeVideoSearches(tracklist, cache);
   await saveYoutubeUrlCache(cache);
   return logResults(result);
 };

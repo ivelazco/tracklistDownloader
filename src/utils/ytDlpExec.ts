@@ -41,6 +41,65 @@ const execYtDlp = async (
   }
 };
 
+export type YtDlpSearchHit = {
+  title: string;
+  url: string;
+  /** Seconds when flat metadata includes it; otherwise rely on title heuristics only. */
+  durationSeconds: null | number;
+};
+
+type YtDlpFlatSearchJson = {
+  duration?: number;
+  id?: string;
+  title?: string;
+  url?: string;
+  webpage_url?: string;
+};
+
+/**
+ * Resolves `ytsearchN:query` via yt-dlp (newline-delimited JSON). More resilient than scraping
+ * youtube.com/search from Node when yt-dlp is installed.
+ */
+export const searchYoutubeWithYtDlp = async (
+  ytDlpPath: string,
+  query: string,
+  maxResults = 20,
+): Promise<YtDlpSearchHit[]> => {
+  const q = query.trim();
+  if (!q) return [];
+
+  const { stdout } = await execYtDlp(
+    ytDlpPath,
+    ['--no-warnings', '--simulate', '--skip-download', '--flat-playlist', '--dump-json', `ytsearch${maxResults}:${q}`],
+    12 * 1024 * 1024,
+  );
+
+  const hits: YtDlpSearchHit[] = [];
+  for (const line of stdout.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    try {
+      const j = JSON.parse(trimmed) as YtDlpFlatSearchJson;
+      const title = j.title;
+      if (!title || typeof title !== 'string') continue;
+
+      const url =
+        (typeof j.url === 'string' && /^https?:\/\//i.test(j.url) && j.url) ||
+        (typeof j.webpage_url === 'string' && /^https?:\/\//i.test(j.webpage_url) && j.webpage_url) ||
+        (typeof j.id === 'string' && j.id ? `https://www.youtube.com/watch?v=${j.id}` : '');
+      if (!url) continue;
+
+      const durationSeconds =
+        typeof j.duration === 'number' && Number.isFinite(j.duration) && j.duration >= 0 ? j.duration : null;
+
+      hits.push({ title, url, durationSeconds });
+    } catch {
+      // skip malformed line
+    }
+  }
+  return hits;
+};
+
 export const fetchYoutubeTitleViaYtDlp = async (ytDlpPath: string, url: string): Promise<string> => {
   const { stdout } = await execYtDlp(ytDlpPath, [
     '--no-warnings',

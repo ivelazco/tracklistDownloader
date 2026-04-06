@@ -55,7 +55,7 @@ The canonical JSON shape and placeholders are in **`config/local.json.example`**
 
 ## YouTube search (QUAL-02)
 
-Track → YouTube URL resolution is done with the **`yt-search`** npm package against public search results. The CLI does **not** call **YouTube Data API** **v3**, so no Google Cloud API key is required for this step.
+Track → YouTube URL resolution **prefers [yt-dlp](https://github.com/yt-dlp/yt-dlp)** search (`ytsearchN:`) when **`youtubeMp3Downloader.ytDlpPath`** runs successfully — the same probe as **Download strategy (DL-02)**. If yt-dlp is unavailable or returns no acceptable hit, the CLI falls back to the **`yt-search`** npm package against public search results. Lookups run with **bounded concurrency** (**`searchParallelism`**, or **`queueParallelism`** when omitted) so large playlists (for example 1000+ tracks) do not open thousands of simultaneous searches. The CLI does **not** call **YouTube Data API** **v3**, so no Google Cloud API key is required for this step.
 
 ## Download strategy (DL-02)
 
@@ -63,7 +63,7 @@ By default (**`downloadBackend`: `auto`**), the CLI uses **[yt-dlp](https://gith
 
 If yt-dlp is not installed or fails the probe, the CLI falls back to **`ytdl-mp3`** (**`@distube/ytdl-core`**), which bundles **`ffmpeg-static`**. You can force one stack with **`downloadBackend`**: **`ytdl-mp3`** or **`yt-dlp`** (the latter fails fast with a clear error if the binary is missing).
 
-Relevant **`youtubeMp3Downloader`** keys: **`ffmpegPath`**, **`outputPath`**, **`queueParallelism`**, **`youtubeVideoQuality`**, **`progressTimeout`**, **`downloadBackend`**, **`ytDlpPath`**. **`queueParallelism`** limits how many tracks download at once in **application code**.
+Relevant **`youtubeMp3Downloader`** keys: **`ffmpegPath`**, **`outputPath`**, **`queueParallelism`**, **`searchParallelism`** (optional), **`youtubeVideoQuality`**, **`progressTimeout`**, **`downloadBackend`**, **`ytDlpPath`**. **`queueParallelism`** limits how many tracks download at once; **`searchParallelism`** limits concurrent URL lookups (defaults to **`queueParallelism`**).
 
 Install **[FFmpeg](https://github.com/adaptlearning/adapt_authoring/wiki/Installing-FFmpeg)** and set **`ffmpegPath`** to the executable (for example `ffmpeg` on your PATH). Install **[yt-dlp](https://github.com/yt-dlp/yt-dlp/releases)** for the recommended download path when YouTube changes break pure JS extractors.
 
@@ -71,7 +71,7 @@ Install **[FFmpeg](https://github.com/adaptlearning/adapt_authoring/wiki/Install
 
 ## Config keys
 
-No field in **`config/local.json`** exists solely for YouTube search after Phase 3 plan **03-01** — search uses **`yt-search`**; see **YouTube search (QUAL-02)** above.
+No field in **`config/local.json`** exists solely for YouTube search after Phase 3 plan **03-01** — search uses **yt-dlp** when the binary runs, else **`yt-search`**; see **YouTube search (QUAL-02)** above.
 
 | Key | Purpose (one line) | Stage |
 | --- | --- | --- |
@@ -79,9 +79,10 @@ No field in **`config/local.json`** exists solely for YouTube search after Phase
 | `youtubeMp3Downloader.outputPath` | Root folder for playlist output directories | Paths / output |
 | `youtubeMp3Downloader.progressTimeout` | Timeout (ms) for download progress reporting | Download |
 | `youtubeMp3Downloader.queueParallelism` | Max concurrent downloads in application code | Download |
+| `youtubeMp3Downloader.searchParallelism` | Max concurrent YouTube URL lookups (optional; defaults to `queueParallelism`) | YouTube search |
 | `youtubeMp3Downloader.youtubeVideoQuality` | Preferred YouTube stream quality hint for the ytdl-mp3 path | Download |
 | `youtubeMp3Downloader.downloadBackend` | `auto` (default), `yt-dlp`, or `ytdl-mp3` — see **Download strategy (DL-02)** | Download |
-| `youtubeMp3Downloader.ytDlpPath` | yt-dlp executable (default `yt-dlp`) when backend resolves to yt-dlp | Download |
+| `youtubeMp3Downloader.ytDlpPath` | yt-dlp executable (default `yt-dlp`); download when backend resolves to yt-dlp, and YouTube search when the binary runs | Download |
 | `spotify.clientId` | Spotify Web API application client ID | Spotify |
 | `spotify.clientSecret` | Spotify Web API application client secret | Spotify |
 | `spotify.market` | Optional ISO 3166-1 alpha-2 country for playlist API queries (defaults to **US** if omitted) | Spotify |
